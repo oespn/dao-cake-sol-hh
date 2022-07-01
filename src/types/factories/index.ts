@@ -4,5 +4,7 @@
 export { DAOCake__factory } from "./DAOCake__factory";
 export { DAOCake_Rep_Members__factory } from "./DAOCake_Rep_Members__factory";
 export { DAOCake_Rep_Orgs__factory } from "./DAOCake_Rep_Orgs__factory";
+export { DAOCake_Rep_Proposals__factory } from "./DAOCake_Rep_Proposals__factory";
+export { DAOCake_Rep_Votes__factory } from "./DAOCake_Rep_Votes__factory";
 export { Greeter__factory } from "./Greeter__factory";
 export { HitchensUnorderedKeySet__factory } from "./HitchensUnorderedKeySet__factory";

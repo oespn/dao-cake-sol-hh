@@ -8,6 +8,9 @@ import "./DAOCake_Entities.sol";
 import "./DAOCake_Rep_Orgs.sol";
 import "./DAOCake_Rep_Members.sol";
 
+import "./DAOCake_Rep_Proposals.sol";
+import "./DAOCake_Rep_Votes.sol";
+
 contract DAOCake {
     // using HitchensUnorderedKeySetLib for HitchensUnorderedKeySetLib.Set;
     // HitchensUnorderedKeySetLib.Set orgSet;
@@ -17,6 +20,9 @@ contract DAOCake {
 
     DAOCake_Rep_Orgs org = new DAOCake_Rep_Orgs();
     DAOCake_Rep_Members member = new DAOCake_Rep_Members();
+
+    DAOCake_Rep_Proposals proposal = new DAOCake_Rep_Proposals();
+    DAOCake_Rep_Votes vote = new DAOCake_Rep_Votes();
 
     //DAOCake_Entities.MemberStruct memberTest;
 
@@ -80,19 +86,37 @@ contract DAOCake {
 
     // Claims & Transactions (proposals core entity)
 
+    /// ** getProposalsOrg(orgKey) Org[].proposals
+
+    /// ** getVotesByMember(me) Member[].votes
+
     function createClaim(
         bytes32 proposalKey,
         bytes32 orgKey,
-        string memory refNo,
-        string memory docId,
-        int16 douAmount
+        string memory name,
+        string memory uuid,
+        string memory doc_cid,
+        string memory ref_id,
+        uint256 douAmount
     ) public {
         bytes32 memberKey = member.addressToBytes32(msg.sender);
-        //ProposalType proposalType = ProposalType.Pay;
+        require(org.memberExists(orgKey, memberKey), "Member must be part of the Org");
 
-        // confirm member is in that org
-
-        // createProposal
+        // check if repository has this Proposal (separate from org.poposals)
+        if (!proposal.exists(proposalKey)) {
+            proposal.newProposal(
+                proposalKey,
+                orgKey,
+                memberKey,
+                name,
+                uuid,
+                doc_cid,
+                ref_id,
+                douAmount,
+                DAOCake_Entities.ProposalType.PAY
+            );
+            org.proposalAdd(orgKey, proposalKey);
+        }
     }
     // ^^ Duplicate for each Type
     // createNewMember, createOrgRules all calling

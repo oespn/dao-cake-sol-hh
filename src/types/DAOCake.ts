@@ -27,7 +27,7 @@ import type {
 
 export interface DAOCakeInterface extends utils.Interface {
   functions: {
-    "createClaim(bytes32,bytes32,string,string,int16)": FunctionFragment;
+    "createClaim(bytes32,bytes32,string,string,string,string,uint256)": FunctionFragment;
     "createOrg(bytes32,string,string,string)": FunctionFragment;
     "getMembersOfOrg(bytes32)": FunctionFragment;
     "getOrg(bytes32)": FunctionFragment;
@@ -50,6 +50,8 @@ export interface DAOCakeInterface extends utils.Interface {
     values: [
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>,
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
       PromiseOrValue<string>,
       PromiseOrValue<string>,
       PromiseOrValue<BigNumberish>
@@ -137,8 +139,10 @@ export interface DAOCake extends BaseContract {
     createClaim(
       proposalKey: PromiseOrValue<BytesLike>,
       orgKey: PromiseOrValue<BytesLike>,
-      refNo: PromiseOrValue<string>,
-      docId: PromiseOrValue<string>,
+      name: PromiseOrValue<string>,
+      uuid: PromiseOrValue<string>,
+      doc_cid: PromiseOrValue<string>,
+      ref_id: PromiseOrValue<string>,
       douAmount: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
@@ -186,8 +190,10 @@ export interface DAOCake extends BaseContract {
   createClaim(
     proposalKey: PromiseOrValue<BytesLike>,
     orgKey: PromiseOrValue<BytesLike>,
-    refNo: PromiseOrValue<string>,
-    docId: PromiseOrValue<string>,
+    name: PromiseOrValue<string>,
+    uuid: PromiseOrValue<string>,
+    doc_cid: PromiseOrValue<string>,
+    ref_id: PromiseOrValue<string>,
     douAmount: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
@@ -235,8 +241,10 @@ export interface DAOCake extends BaseContract {
     createClaim(
       proposalKey: PromiseOrValue<BytesLike>,
       orgKey: PromiseOrValue<BytesLike>,
-      refNo: PromiseOrValue<string>,
-      docId: PromiseOrValue<string>,
+      name: PromiseOrValue<string>,
+      uuid: PromiseOrValue<string>,
+      doc_cid: PromiseOrValue<string>,
+      ref_id: PromiseOrValue<string>,
       douAmount: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -287,8 +295,10 @@ export interface DAOCake extends BaseContract {
     createClaim(
       proposalKey: PromiseOrValue<BytesLike>,
       orgKey: PromiseOrValue<BytesLike>,
-      refNo: PromiseOrValue<string>,
-      docId: PromiseOrValue<string>,
+      name: PromiseOrValue<string>,
+      uuid: PromiseOrValue<string>,
+      doc_cid: PromiseOrValue<string>,
+      ref_id: PromiseOrValue<string>,
       douAmount: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
@@ -329,8 +339,10 @@ export interface DAOCake extends BaseContract {
     createClaim(
       proposalKey: PromiseOrValue<BytesLike>,
       orgKey: PromiseOrValue<BytesLike>,
-      refNo: PromiseOrValue<string>,
-      docId: PromiseOrValue<string>,
+      name: PromiseOrValue<string>,
+      uuid: PromiseOrValue<string>,
+      doc_cid: PromiseOrValue<string>,
+      ref_id: PromiseOrValue<string>,
       douAmount: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;

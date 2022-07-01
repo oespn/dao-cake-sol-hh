@@ -21,6 +21,14 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.DAOCake_Rep_Orgs__factory>;
     getContractFactory(
+      name: "DAOCake_Rep_Proposals",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.DAOCake_Rep_Proposals__factory>;
+    getContractFactory(
+      name: "DAOCake_Rep_Votes",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.DAOCake_Rep_Votes__factory>;
+    getContractFactory(
       name: "DAOCake",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.DAOCake__factory>;
@@ -43,6 +51,16 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.DAOCake_Rep_Orgs>;
+    getContractAt(
+      name: "DAOCake_Rep_Proposals",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.DAOCake_Rep_Proposals>;
+    getContractAt(
+      name: "DAOCake_Rep_Votes",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.DAOCake_Rep_Votes>;
     getContractAt(
       name: "DAOCake",
       address: string,
