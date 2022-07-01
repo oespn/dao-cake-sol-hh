@@ -13,15 +13,51 @@ import { ethers } from "ethers";
 declare module "hardhat/types/runtime" {
   interface HardhatEthersHelpers extends HardhatEthersHelpersBase {
     getContractFactory(
+      name: "DAOCake_Rep_Members",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.DAOCake_Rep_Members__factory>;
+    getContractFactory(
+      name: "DAOCake_Rep_Orgs",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.DAOCake_Rep_Orgs__factory>;
+    getContractFactory(
+      name: "DAOCake",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.DAOCake__factory>;
+    getContractFactory(
       name: "Greeter",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Greeter__factory>;
+    getContractFactory(
+      name: "HitchensUnorderedKeySet",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.HitchensUnorderedKeySet__factory>;
 
+    getContractAt(
+      name: "DAOCake_Rep_Members",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.DAOCake_Rep_Members>;
+    getContractAt(
+      name: "DAOCake_Rep_Orgs",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.DAOCake_Rep_Orgs>;
+    getContractAt(
+      name: "DAOCake",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.DAOCake>;
     getContractAt(
       name: "Greeter",
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.Greeter>;
+    getContractAt(
+      name: "HitchensUnorderedKeySet",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.HitchensUnorderedKeySet>;
 
     // default types
     getContractFactory(
