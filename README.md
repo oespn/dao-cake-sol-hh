@@ -129,5 +129,5 @@ tronbox compile --compile-all
 Deploy
 
 ```sh
-source .env && tronbox migrate --network shasta
+source .env && tronbox migrate --reset --network shasta
 ```
