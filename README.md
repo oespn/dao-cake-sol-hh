@@ -109,3 +109,25 @@ If you use VSCode, you can enjoy syntax highlighting for your Solidity code via 
 If you can't get the [Waffle matchers](https://ethereum-waffle.readthedocs.io/en/latest/matchers.html) to work, try to
 make your `ethers` package version match the version used by the `@ethereum-waffle/chai` package. Seem
 [#111](https://github.com/paulrberg/solidity-template/issues/111) for more details.
+
+### Tronweb
+
+Install tronbox
+
+```sh
+npm install -g tronbox
+```
+
+Create .env file and change PRIVATE_KEY_SHASTA
+
+Compile
+
+```sh
+tronbox compile --compile-all
+```
+
+Deploy
+
+```sh
+source .env && tronbox migrate --reset --network shasta
+```
