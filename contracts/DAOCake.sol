@@ -1,5 +1,5 @@
 // SPDX-License-Identifier
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 import "./HitchensUnorderedKeySet.sol";
 //import "./Ownable.sol";
@@ -118,11 +118,29 @@ contract DAOCake {
             org.proposalAdd(orgKey, proposalKey);
         }
     }
+
     // ^^ Duplicate for each Type
     // createNewMember, createOrgRules all calling
     // private createProposal
 
     // Voting
+
+    function castVote(
+        bytes32 voteKey,
+        bytes32 proposalKey,
+        bytes32 memberKey,
+        bool voteFor
+    ) public {
+        bytes32 memberKey = member.addressToBytes32(msg.sender);
+        require(org.memberExists(orgKey, memberKey), "Member must be part of the Org to Vote");
+
+        // check if repository has this Proposal (separate from org.poposals)
+        if (!proposal.exists(proposalKey)) {
+            // logs that the member has voted
+            proposal.voteAdd(proposalKey, memberKey);
+            vote.newVote(voteKey, proposalKey, memberKey, voteFor);
+        }
+    }
 
     // Member
 

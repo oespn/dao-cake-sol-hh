@@ -1,5 +1,5 @@
 // SPDX-License-Identifier
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 import "./HitchensUnorderedKeySet.sol";
 
@@ -65,7 +65,8 @@ contract DAOCake_Rep_Orgs {
         emit LogNewOrg(msg.sender, key, name, ref, memberKey, o.nMembers, o.voteForRequired);
     }
 
-    // function _memberAdd(bytes32 orgKey, bytes32 memberKey) public view returns (DAOCake_Entities.OrgStruct memory org) {
+    // function _memberAdd(bytes32 orgKey, bytes32 memberKey) public view returns
+    // (DAOCake_Entities.OrgStruct memory org) {
     //     DAOCake_Entities.OrgStruct storage o = orgs[orgKey];
     //     if (o.isMember[memberKey] == false)
     //     {
