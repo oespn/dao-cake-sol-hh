@@ -102,17 +102,20 @@ contract DAOCake {
         bytes32 memberKey = member.addressToBytes32(msg.sender);
         require(org.memberExists(orgKey, memberKey), "Member must be part of the Org");
 
+        uint16 votesRequired = org.getVotesRequired(orgKey);
+
         // check if repository has this Proposal (separate from org.poposals)
         if (!proposal.exists(proposalKey)) {
             proposal.newProposal(
                 proposalKey,
-                orgKey,
+                //orgKey,
                 memberKey,
                 name,
                 uuid,
                 doc_cid,
                 ref_id,
                 douAmount,
+                votesRequired,
                 DAOCake_Entities.ProposalType.PAY
             );
             org.proposalAdd(orgKey, proposalKey);
@@ -125,20 +128,50 @@ contract DAOCake {
 
     // Voting
 
+    // struct Tally {
+    //     uint16 votes;
+    //     uint16 votesFor;
+    // }
+
     function castVote(
+        bytes32 orgKey,
+        bytes32 voteKey,
+        bytes32 proposalKey,
+        bool voteFor
+    ) public {
+        bytes32 memberKey = member.addressToBytes32(msg.sender);
+        castVoteAsMember(orgKey, voteKey, proposalKey, memberKey, voteFor);
+    }
+
+    //** MAKE PRIVATE */
+    function castVoteAsMember(
+        bytes32 orgKey,
         bytes32 voteKey,
         bytes32 proposalKey,
         bytes32 memberKey,
         bool voteFor
     ) public {
-        bytes32 memberKey = member.addressToBytes32(msg.sender);
+        //bytes32 memberKey = member.addressToBytes32(msg.sender);
         require(org.memberExists(orgKey, memberKey), "Member must be part of the Org to Vote");
 
         // check if repository has this Proposal (separate from org.poposals)
         if (!proposal.exists(proposalKey)) {
-            // logs that the member has voted
-            proposal.voteAdd(proposalKey, memberKey);
+            DAOCake_Entities.ProposalType action; // if
+            uint256 newVal = 0;
+
+            // returns action & value when the proposal condition is met
+            (action, newVal) = proposal.voteAdd(proposalKey, memberKey, voteFor);
             vote.newVote(voteKey, proposalKey, memberKey, voteFor);
+
+            // check if votes met to close this proposal
+
+            if (action == DAOCake_Entities.ProposalType.NEW_MEMBER) // 'updateMemberAsApproved'
+            {
+                org.memberApproved(orgKey, memberKey);
+            } else if (action == DAOCake_Entities.ProposalType.ORG_RULES) // 'updateMemberVoteRules'
+            {
+                org.setVotesRequired(orgKey, uint16(newVal));
+            }
         }
     }
 

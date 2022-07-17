@@ -40,6 +40,7 @@ contract DAOCake_Rep_Orgs {
         string ref,
         bytes32 memberKey,
         uint16 members,
+        uint16 membersApproved,
         uint32 proposals,
         uint16 voteForRequired
     );
@@ -57,11 +58,16 @@ contract DAOCake_Rep_Orgs {
         o.ref = ref;
         o.memberKey = memberKey;
         o.nMembers = 1;
+        o.nMembersApproved = 1;
         o.nProposals = 0;
         o.voteForRequired = 1;
         // add member
         o.members.push(memberKey);
         o.isMember[memberKey] = true;
+        // approve member
+        o.membersApproved.push(memberKey);
+        o.isMemberApproved[memberKey] = true;
+
         emit LogNewOrg(msg.sender, key, name, ref, memberKey, o.nMembers, o.voteForRequired);
     }
 
@@ -77,6 +83,8 @@ contract DAOCake_Rep_Orgs {
     //     }
     // }
 
+    /// Member associated with the Organsation (Does not infer Approved)
+
     function memberAdd(bytes32 orgKey, bytes32 memberKey) public {
         require(orgSet.exists(orgKey), "Can't add to an Org that doesn't exist.");
         DAOCake_Entities.OrgStruct storage o = orgs[orgKey];
@@ -88,10 +96,20 @@ contract DAOCake_Rep_Orgs {
             o.members.push(memberKey);
             o.isMember[memberKey] = true;
         }
-        emit LogUpdateOrg(msg.sender, orgKey, o.name, o.ref, memberKey, o.nMembers, o.nProposals, o.voteForRequired);
+        emit LogUpdateOrg(
+            msg.sender,
+            orgKey,
+            o.name,
+            o.ref,
+            memberKey,
+            o.nMembers,
+            o.nMembersApproved,
+            o.nProposals,
+            o.voteForRequired
+        );
     }
 
-    function memberExists(bytes32 orgKey, bytes32 memberKey) public returns (bool) {
+    function memberExists(bytes32 orgKey, bytes32 memberKey) public view returns (bool) {
         require(orgSet.exists(orgKey), "Can't find Org to check Member.");
         DAOCake_Entities.OrgStruct storage o = orgs[orgKey];
         return o.isMember[memberKey];
@@ -101,6 +119,53 @@ contract DAOCake_Rep_Orgs {
         require(orgSet.exists(orgKey), "Can't get an Org that doesn't exist.");
         DAOCake_Entities.OrgStruct storage o = orgs[orgKey];
         return (o.members);
+    }
+
+    /// Approved Members associated with the Organsation
+
+    function memberApproved(bytes32 orgKey, bytes32 memberKey) public {
+        require(orgSet.exists(orgKey), "Can't add to an Org that doesn't exist.");
+        DAOCake_Entities.OrgStruct storage o = orgs[orgKey];
+
+        if (o.isMemberApproved[memberKey] == false) {
+            o.nMembersApproved = o.nMembersApproved + 1;
+            // deref with: m = o.members[nMembers];
+            o.membersApproved.push(memberKey);
+            o.isMemberApproved[memberKey] = true;
+        }
+        emit LogUpdateOrg(
+            msg.sender,
+            orgKey,
+            o.name,
+            o.ref,
+            memberKey,
+            o.nMembers,
+            o.nMembersApproved,
+            o.nProposals,
+            o.voteForRequired
+        );
+    }
+
+    function memberApprovedExists(bytes32 orgKey, bytes32 memberKey) public view returns (bool) {
+        require(orgSet.exists(orgKey), "Can't find Org to check Member.");
+        DAOCake_Entities.OrgStruct storage o = orgs[orgKey];
+        return o.isMemberApproved[memberKey];
+    }
+
+    function getOrgApprovedMembers(bytes32 orgKey) public view returns (bytes32[] memory array) {
+        require(orgSet.exists(orgKey), "Can't get an Org that doesn't exist.");
+        DAOCake_Entities.OrgStruct storage o = orgs[orgKey];
+        return (o.membersApproved);
+    }
+
+    function getVotesRequired(bytes32 orgKey) public view returns (uint16 votesRequired) {
+        DAOCake_Entities.OrgStruct storage o = orgs[orgKey];
+        return (o.voteForRequired);
+    }
+
+    function setVotesRequired(bytes32 orgKey, uint16 votesRequired) public {
+        DAOCake_Entities.OrgStruct storage o = orgs[orgKey];
+        o.voteForRequired = votesRequired;
     }
 
     function proposalAdd(bytes32 orgKey, bytes32 proposalKey) public {
@@ -114,7 +179,17 @@ contract DAOCake_Rep_Orgs {
             o.proposals.push(proposalKey);
             o.hasProposal[proposalKey] = true;
         }
-        emit LogUpdateOrg(msg.sender, orgKey, o.name, o.ref, o.memberKey, o.nMembers, o.nProposals, o.voteForRequired);
+        emit LogUpdateOrg(
+            msg.sender,
+            orgKey,
+            o.name,
+            o.ref,
+            o.memberKey,
+            o.nMembers,
+            o.nMembersApproved,
+            o.nProposals,
+            o.voteForRequired
+        );
     }
 
     function updateOrg(
@@ -132,7 +207,17 @@ contract DAOCake_Rep_Orgs {
         w.memberKey = memberKey;
         w.nMembers = nMembers;
         w.voteForRequired = voteForRequired;
-        emit LogUpdateOrg(msg.sender, key, name, ref, memberKey, nMembers, w.nProposals, voteForRequired);
+        emit LogUpdateOrg(
+            msg.sender,
+            key,
+            name,
+            ref,
+            memberKey,
+            nMembers,
+            w.nMembersApproved,
+            w.nProposals,
+            voteForRequired
+        );
     }
 
     function exists(bytes32 key) public view returns (bool) {

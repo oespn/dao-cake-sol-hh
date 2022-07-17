@@ -45,6 +45,8 @@ contract DAOCake_Rep_Proposals {
         string ref_id,
         uint256 total,
         uint16 nVotes,
+        uint16 nVotesFor,
+        uint16 nVotesRequired,
         DAOCake_Entities.ProposalType proposalType
     );
     event LogUpdateProposal(
@@ -56,20 +58,24 @@ contract DAOCake_Rep_Proposals {
         string ref_id,
         uint256 total,
         uint16 nVotes,
-        DAOCake_Entities.ProposalType proposalType
+        uint16 nVotesFor,
+        uint16 nVotesRequired,
+        DAOCake_Entities.ProposalType proposalType,
+        DAOCake_Entities.DecisionStatus decisionStatus
     );
 
     event LogRemProposal(address sender, bytes32 key);
 
     function newProposal(
         bytes32 key,
-        bytes32 orgKey,
+        //bytes32 orgKey,
         bytes32 memberKey,
         string memory name,
         string memory uuid,
         string memory doc_cid,
         string memory ref_id,
         uint256 total,
+        uint16 votesRequired,
         DAOCake_Entities.ProposalType proposalType
     ) public {
         proposalSet.insert(key); // Note that this will fail automatically if the key already exists.
@@ -90,14 +96,38 @@ contract DAOCake_Rep_Proposals {
         o.decision = DAOCake_Entities.DecisionStatus.UNDECIDED;
         o.proposalType = proposalType;
 
+        o.nVotesRequired = votesRequired;
         // add member's vote
         o.nVotes = 1;
         o.votes.push(memberKey);
         o.hasVoted[memberKey] = true;
-        emit LogNewProposal(msg.sender, key, name, uuid, doc_cid, ref_id, total, o.nVotes, o.proposalType);
+        // store ForVote attributes
+        o.nVotesFor = 1;
+        o.hasVotedFor[memberKey] = true;
+
+        emit LogNewProposal(
+            msg.sender,
+            key,
+            name,
+            uuid,
+            doc_cid,
+            ref_id,
+            total,
+            o.nVotes,
+            o.nVotesFor,
+            votesRequired,
+            o.proposalType
+        );
     }
 
-    function voteAdd(bytes32 proposalKey, bytes32 memberKey) public {
+    function voteAdd(
+        bytes32 proposalKey,
+        bytes32 memberKey,
+        bool voteFor
+    ) public returns (DAOCake_Entities.ProposalType action, uint256 value) {
+        action = DAOCake_Entities.ProposalType.NONE;
+        value = 0;
+
         require(proposalSet.exists(proposalKey), "Can't add to an Proposal that doesn't exist.");
         DAOCake_Entities.ProposalStruct storage p = proposals[proposalKey];
 
@@ -107,7 +137,27 @@ contract DAOCake_Rep_Proposals {
             // deref with: m = o.votes[nVotes];
             p.votes.push(memberKey);
             p.hasVoted[memberKey] = true;
+
+            // 'voteFor' get counted and members accounted
+            if (voteFor) {
+                p.nVotesFor = p.nVotesFor + 1;
+                p.hasVotedFor[memberKey] = true;
+
+                // process Vote outcome
+                if (p.decision == DAOCake_Entities.DecisionStatus.UNDECIDED) {
+                    if (p.nVotesFor >= p.nVotesRequired) {
+                        p.decision = DAOCake_Entities.DecisionStatus.APPROVED;
+                        action = p.proposalType;
+
+                        if (p.proposalType == DAOCake_Entities.ProposalType.ORG_RULES) {
+                            action = DAOCake_Entities.ProposalType.ORG_RULES;
+                            value = p.total;
+                        }
+                    }
+                }
+            }
         }
+
         emit LogUpdateProposal(
             msg.sender,
             proposalKey,
@@ -117,8 +167,25 @@ contract DAOCake_Rep_Proposals {
             p.ref_id,
             p.total,
             p.nVotes,
-            p.proposalType
+            p.nVotesFor,
+            p.nVotesRequired,
+            p.proposalType,
+            p.decision // emit result
         );
+    }
+
+    function getVotesCount(bytes32 proposalKey)
+        public
+        view
+        returns (
+            uint16 votes,
+            uint16 votesFor,
+            uint16 votesRequired
+        )
+    {
+        require(proposalSet.exists(proposalKey), "Can't get a Proposal that doesn't exist.");
+        DAOCake_Entities.ProposalStruct storage p = proposals[proposalKey];
+        return (p.nVotes, p.nVotesFor, p.nVotesRequired);
     }
 
     function getProposalVotes(bytes32 proposalKey) public view returns (bytes32[] memory array) {

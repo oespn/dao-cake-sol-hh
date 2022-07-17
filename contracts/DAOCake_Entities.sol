@@ -8,6 +8,7 @@ contract DAOCake_Entities {
         REJECTED
     }
     enum ProposalType {
+        NONE,
         PAY,
         NEW_MEMBER,
         ORG_RULES
@@ -32,6 +33,9 @@ contract DAOCake_Entities {
         uint16 nMembers; // 65k limit
         mapping(bytes32 => bool) isMember; // true if this member exists in org. Keep CRUD separate.
         bytes32[] members;
+        uint16 nMembersApproved; // 65k limit
+        mapping(bytes32 => bool) isMemberApproved; // true if this member exists in org. Keep CRUD separate.
+        bytes32[] membersApproved;
         uint32 nProposals; // 4292m limit
         mapping(bytes32 => bool) hasProposal; // true if this member has voted on proposal. Keep CRUD separate.
         bytes32[] proposals;
@@ -52,10 +56,13 @@ contract DAOCake_Entities {
         uint256 total; //DOU (DAO IOUs)
         DecisionStatus decision; // = DecisionStatus.Undecided;
         ProposalType proposalType; // = ProposalType.Pay;
+        uint16 nVotesRequired; // From Org at the time the Proposal created
         // internal mappings
         uint16 nVotes;
         mapping(bytes32 => bool) hasVoted; // true if this member has voted on proposal. Keep CRUD separate.
         bytes32[] votes; // ref: VoteSet
+        uint16 nVotesFor; // How many votes For the proposal (not opposed)
+        mapping(bytes32 => bool) hasVotedFor; // those in hasVoted not in hasVoted For voted against.
     }
     // key: mapping(bytes32 => DAOCake_Entities.ProposalStruct) proposals;
 
