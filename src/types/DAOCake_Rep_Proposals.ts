@@ -36,9 +36,10 @@ export interface DAOCake_Rep_ProposalsInterface extends utils.Interface {
     "getProposalAtIndex(uint256)": FunctionFragment;
     "getProposalCount()": FunctionFragment;
     "getProposalVotes(bytes32)": FunctionFragment;
-    "newProposal(bytes32,bytes32,bytes32,string,string,string,string,uint256,uint8)": FunctionFragment;
+    "getVotesCount(bytes32)": FunctionFragment;
+    "newProposal(bytes32,bytes32,string,string,string,string,uint256,uint16,uint8)": FunctionFragment;
     "remProposal(bytes32)": FunctionFragment;
-    "voteAdd(bytes32,bytes32)": FunctionFragment;
+    "voteAdd(bytes32,bytes32,bool)": FunctionFragment;
   };
 
   getFunction(
@@ -48,6 +49,7 @@ export interface DAOCake_Rep_ProposalsInterface extends utils.Interface {
       | "getProposalAtIndex"
       | "getProposalCount"
       | "getProposalVotes"
+      | "getVotesCount"
       | "newProposal"
       | "remProposal"
       | "voteAdd"
@@ -74,15 +76,19 @@ export interface DAOCake_Rep_ProposalsInterface extends utils.Interface {
     values: [PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
+    functionFragment: "getVotesCount",
+    values: [PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "newProposal",
     values: [
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>,
       PromiseOrValue<string>,
       PromiseOrValue<string>,
       PromiseOrValue<string>,
       PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>
     ]
@@ -93,7 +99,11 @@ export interface DAOCake_Rep_ProposalsInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "voteAdd",
-    values: [PromiseOrValue<BytesLike>, PromiseOrValue<BytesLike>]
+    values: [
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<boolean>
+    ]
   ): string;
 
   decodeFunctionResult(functionFragment: "exists", data: BytesLike): Result;
@@ -114,6 +124,10 @@ export interface DAOCake_Rep_ProposalsInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "getVotesCount",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "newProposal",
     data: BytesLike
   ): Result;
@@ -124,9 +138,9 @@ export interface DAOCake_Rep_ProposalsInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "voteAdd", data: BytesLike): Result;
 
   events: {
-    "LogNewProposal(address,bytes32,string,string,string,string,uint256,uint16,uint8)": EventFragment;
+    "LogNewProposal(address,bytes32,string,string,string,string,uint256,uint16,uint16,uint16,uint8)": EventFragment;
     "LogRemProposal(address,bytes32)": EventFragment;
-    "LogUpdateProposal(address,bytes32,string,string,string,string,uint256,uint16,uint8)": EventFragment;
+    "LogUpdateProposal(address,bytes32,string,string,string,string,uint256,uint16,uint16,uint16,uint8,uint8)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "LogNewProposal"): EventFragment;
@@ -143,10 +157,24 @@ export interface LogNewProposalEventObject {
   ref_id: string;
   total: BigNumber;
   nVotes: number;
+  nVotesFor: number;
+  nVotesRequired: number;
   proposalType: number;
 }
 export type LogNewProposalEvent = TypedEvent<
-  [string, string, string, string, string, string, BigNumber, number, number],
+  [
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    BigNumber,
+    number,
+    number,
+    number,
+    number
+  ],
   LogNewProposalEventObject
 >;
 
@@ -172,10 +200,26 @@ export interface LogUpdateProposalEventObject {
   ref_id: string;
   total: BigNumber;
   nVotes: number;
+  nVotesFor: number;
+  nVotesRequired: number;
   proposalType: number;
+  decisionStatus: number;
 }
 export type LogUpdateProposalEvent = TypedEvent<
-  [string, string, string, string, string, string, BigNumber, number, number],
+  [
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    BigNumber,
+    number,
+    number,
+    number,
+    number,
+    number
+  ],
   LogUpdateProposalEventObject
 >;
 
@@ -255,15 +299,26 @@ export interface DAOCake_Rep_Proposals extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string[]] & { array: string[] }>;
 
+    getVotesCount(
+      proposalKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<
+      [number, number, number] & {
+        votes: number;
+        votesFor: number;
+        votesRequired: number;
+      }
+    >;
+
     newProposal(
       key: PromiseOrValue<BytesLike>,
-      orgKey: PromiseOrValue<BytesLike>,
       memberKey: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<string>,
       uuid: PromiseOrValue<string>,
       doc_cid: PromiseOrValue<string>,
       ref_id: PromiseOrValue<string>,
       total: PromiseOrValue<BigNumberish>,
+      votesRequired: PromiseOrValue<BigNumberish>,
       proposalType: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
@@ -276,6 +331,7 @@ export interface DAOCake_Rep_Proposals extends BaseContract {
     voteAdd(
       proposalKey: PromiseOrValue<BytesLike>,
       memberKey: PromiseOrValue<BytesLike>,
+      voteFor: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
   };
@@ -324,15 +380,26 @@ export interface DAOCake_Rep_Proposals extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string[]>;
 
+  getVotesCount(
+    proposalKey: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<
+    [number, number, number] & {
+      votes: number;
+      votesFor: number;
+      votesRequired: number;
+    }
+  >;
+
   newProposal(
     key: PromiseOrValue<BytesLike>,
-    orgKey: PromiseOrValue<BytesLike>,
     memberKey: PromiseOrValue<BytesLike>,
     name: PromiseOrValue<string>,
     uuid: PromiseOrValue<string>,
     doc_cid: PromiseOrValue<string>,
     ref_id: PromiseOrValue<string>,
     total: PromiseOrValue<BigNumberish>,
+    votesRequired: PromiseOrValue<BigNumberish>,
     proposalType: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
@@ -345,6 +412,7 @@ export interface DAOCake_Rep_Proposals extends BaseContract {
   voteAdd(
     proposalKey: PromiseOrValue<BytesLike>,
     memberKey: PromiseOrValue<BytesLike>,
+    voteFor: PromiseOrValue<boolean>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -393,15 +461,26 @@ export interface DAOCake_Rep_Proposals extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string[]>;
 
+    getVotesCount(
+      proposalKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<
+      [number, number, number] & {
+        votes: number;
+        votesFor: number;
+        votesRequired: number;
+      }
+    >;
+
     newProposal(
       key: PromiseOrValue<BytesLike>,
-      orgKey: PromiseOrValue<BytesLike>,
       memberKey: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<string>,
       uuid: PromiseOrValue<string>,
       doc_cid: PromiseOrValue<string>,
       ref_id: PromiseOrValue<string>,
       total: PromiseOrValue<BigNumberish>,
+      votesRequired: PromiseOrValue<BigNumberish>,
       proposalType: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -414,12 +493,13 @@ export interface DAOCake_Rep_Proposals extends BaseContract {
     voteAdd(
       proposalKey: PromiseOrValue<BytesLike>,
       memberKey: PromiseOrValue<BytesLike>,
+      voteFor: PromiseOrValue<boolean>,
       overrides?: CallOverrides
-    ): Promise<void>;
+    ): Promise<[number, BigNumber] & { action: number; value: BigNumber }>;
   };
 
   filters: {
-    "LogNewProposal(address,bytes32,string,string,string,string,uint256,uint16,uint8)"(
+    "LogNewProposal(address,bytes32,string,string,string,string,uint256,uint16,uint16,uint16,uint8)"(
       sender?: null,
       key?: null,
       name?: null,
@@ -428,6 +508,8 @@ export interface DAOCake_Rep_Proposals extends BaseContract {
       ref_id?: null,
       total?: null,
       nVotes?: null,
+      nVotesFor?: null,
+      nVotesRequired?: null,
       proposalType?: null
     ): LogNewProposalEventFilter;
     LogNewProposal(
@@ -439,6 +521,8 @@ export interface DAOCake_Rep_Proposals extends BaseContract {
       ref_id?: null,
       total?: null,
       nVotes?: null,
+      nVotesFor?: null,
+      nVotesRequired?: null,
       proposalType?: null
     ): LogNewProposalEventFilter;
 
@@ -448,7 +532,7 @@ export interface DAOCake_Rep_Proposals extends BaseContract {
     ): LogRemProposalEventFilter;
     LogRemProposal(sender?: null, key?: null): LogRemProposalEventFilter;
 
-    "LogUpdateProposal(address,bytes32,string,string,string,string,uint256,uint16,uint8)"(
+    "LogUpdateProposal(address,bytes32,string,string,string,string,uint256,uint16,uint16,uint16,uint8,uint8)"(
       sender?: null,
       key?: null,
       name?: null,
@@ -457,7 +541,10 @@ export interface DAOCake_Rep_Proposals extends BaseContract {
       ref_id?: null,
       total?: null,
       nVotes?: null,
-      proposalType?: null
+      nVotesFor?: null,
+      nVotesRequired?: null,
+      proposalType?: null,
+      decisionStatus?: null
     ): LogUpdateProposalEventFilter;
     LogUpdateProposal(
       sender?: null,
@@ -468,7 +555,10 @@ export interface DAOCake_Rep_Proposals extends BaseContract {
       ref_id?: null,
       total?: null,
       nVotes?: null,
-      proposalType?: null
+      nVotesFor?: null,
+      nVotesRequired?: null,
+      proposalType?: null,
+      decisionStatus?: null
     ): LogUpdateProposalEventFilter;
   };
 
@@ -495,15 +585,20 @@ export interface DAOCake_Rep_Proposals extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getVotesCount(
+      proposalKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     newProposal(
       key: PromiseOrValue<BytesLike>,
-      orgKey: PromiseOrValue<BytesLike>,
       memberKey: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<string>,
       uuid: PromiseOrValue<string>,
       doc_cid: PromiseOrValue<string>,
       ref_id: PromiseOrValue<string>,
       total: PromiseOrValue<BigNumberish>,
+      votesRequired: PromiseOrValue<BigNumberish>,
       proposalType: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
@@ -516,6 +611,7 @@ export interface DAOCake_Rep_Proposals extends BaseContract {
     voteAdd(
       proposalKey: PromiseOrValue<BytesLike>,
       memberKey: PromiseOrValue<BytesLike>,
+      voteFor: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
   };
@@ -543,15 +639,20 @@ export interface DAOCake_Rep_Proposals extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    getVotesCount(
+      proposalKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     newProposal(
       key: PromiseOrValue<BytesLike>,
-      orgKey: PromiseOrValue<BytesLike>,
       memberKey: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<string>,
       uuid: PromiseOrValue<string>,
       doc_cid: PromiseOrValue<string>,
       ref_id: PromiseOrValue<string>,
       total: PromiseOrValue<BigNumberish>,
+      votesRequired: PromiseOrValue<BigNumberish>,
       proposalType: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
@@ -564,6 +665,7 @@ export interface DAOCake_Rep_Proposals extends BaseContract {
     voteAdd(
       proposalKey: PromiseOrValue<BytesLike>,
       memberKey: PromiseOrValue<BytesLike>,
+      voteFor: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
   };

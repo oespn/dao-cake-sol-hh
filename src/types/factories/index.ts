@@ -8,3 +8,4 @@ export { DAOCake_Rep_Proposals__factory } from "./DAOCake_Rep_Proposals__factory
 export { DAOCake_Rep_Votes__factory } from "./DAOCake_Rep_Votes__factory";
 export { Greeter__factory } from "./Greeter__factory";
 export { HitchensUnorderedKeySet__factory } from "./HitchensUnorderedKeySet__factory";
+export { Migrations__factory } from "./Migrations__factory";

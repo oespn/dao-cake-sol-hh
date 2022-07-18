@@ -27,6 +27,8 @@ import type {
 
 export interface DAOCakeInterface extends utils.Interface {
   functions: {
+    "castVote(bytes32,bytes32,bytes32,bool)": FunctionFragment;
+    "castVoteAsMember(bytes32,bytes32,bytes32,bytes32,bool)": FunctionFragment;
     "createClaim(bytes32,bytes32,string,string,string,string,uint256)": FunctionFragment;
     "createOrg(bytes32,string,string,string)": FunctionFragment;
     "getMembersOfOrg(bytes32)": FunctionFragment;
@@ -37,6 +39,8 @@ export interface DAOCakeInterface extends utils.Interface {
 
   getFunction(
     nameOrSignatureOrTopic:
+      | "castVote"
+      | "castVoteAsMember"
       | "createClaim"
       | "createOrg"
       | "getMembersOfOrg"
@@ -45,6 +49,25 @@ export interface DAOCakeInterface extends utils.Interface {
       | "simpleAddMember"
   ): FunctionFragment;
 
+  encodeFunctionData(
+    functionFragment: "castVote",
+    values: [
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<boolean>
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "castVoteAsMember",
+    values: [
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<boolean>
+    ]
+  ): string;
   encodeFunctionData(
     functionFragment: "createClaim",
     values: [
@@ -87,6 +110,11 @@ export interface DAOCakeInterface extends utils.Interface {
     ]
   ): string;
 
+  decodeFunctionResult(functionFragment: "castVote", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "castVoteAsMember",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "createClaim",
     data: BytesLike
@@ -136,6 +164,23 @@ export interface DAOCake extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    castVote(
+      orgKey: PromiseOrValue<BytesLike>,
+      voteKey: PromiseOrValue<BytesLike>,
+      proposalKey: PromiseOrValue<BytesLike>,
+      voteFor: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    castVoteAsMember(
+      orgKey: PromiseOrValue<BytesLike>,
+      voteKey: PromiseOrValue<BytesLike>,
+      proposalKey: PromiseOrValue<BytesLike>,
+      memberKey: PromiseOrValue<BytesLike>,
+      voteFor: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     createClaim(
       proposalKey: PromiseOrValue<BytesLike>,
       orgKey: PromiseOrValue<BytesLike>,
@@ -186,6 +231,23 @@ export interface DAOCake extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
   };
+
+  castVote(
+    orgKey: PromiseOrValue<BytesLike>,
+    voteKey: PromiseOrValue<BytesLike>,
+    proposalKey: PromiseOrValue<BytesLike>,
+    voteFor: PromiseOrValue<boolean>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  castVoteAsMember(
+    orgKey: PromiseOrValue<BytesLike>,
+    voteKey: PromiseOrValue<BytesLike>,
+    proposalKey: PromiseOrValue<BytesLike>,
+    memberKey: PromiseOrValue<BytesLike>,
+    voteFor: PromiseOrValue<boolean>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
 
   createClaim(
     proposalKey: PromiseOrValue<BytesLike>,
@@ -238,6 +300,23 @@ export interface DAOCake extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    castVote(
+      orgKey: PromiseOrValue<BytesLike>,
+      voteKey: PromiseOrValue<BytesLike>,
+      proposalKey: PromiseOrValue<BytesLike>,
+      voteFor: PromiseOrValue<boolean>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    castVoteAsMember(
+      orgKey: PromiseOrValue<BytesLike>,
+      voteKey: PromiseOrValue<BytesLike>,
+      proposalKey: PromiseOrValue<BytesLike>,
+      memberKey: PromiseOrValue<BytesLike>,
+      voteFor: PromiseOrValue<boolean>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     createClaim(
       proposalKey: PromiseOrValue<BytesLike>,
       orgKey: PromiseOrValue<BytesLike>,
@@ -292,6 +371,23 @@ export interface DAOCake extends BaseContract {
   filters: {};
 
   estimateGas: {
+    castVote(
+      orgKey: PromiseOrValue<BytesLike>,
+      voteKey: PromiseOrValue<BytesLike>,
+      proposalKey: PromiseOrValue<BytesLike>,
+      voteFor: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    castVoteAsMember(
+      orgKey: PromiseOrValue<BytesLike>,
+      voteKey: PromiseOrValue<BytesLike>,
+      proposalKey: PromiseOrValue<BytesLike>,
+      memberKey: PromiseOrValue<BytesLike>,
+      voteFor: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     createClaim(
       proposalKey: PromiseOrValue<BytesLike>,
       orgKey: PromiseOrValue<BytesLike>,
@@ -336,6 +432,23 @@ export interface DAOCake extends BaseContract {
   };
 
   populateTransaction: {
+    castVote(
+      orgKey: PromiseOrValue<BytesLike>,
+      voteKey: PromiseOrValue<BytesLike>,
+      proposalKey: PromiseOrValue<BytesLike>,
+      voteFor: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    castVoteAsMember(
+      orgKey: PromiseOrValue<BytesLike>,
+      voteKey: PromiseOrValue<BytesLike>,
+      proposalKey: PromiseOrValue<BytesLike>,
+      memberKey: PromiseOrValue<BytesLike>,
+      voteFor: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     createClaim(
       proposalKey: PromiseOrValue<BytesLike>,
       orgKey: PromiseOrValue<BytesLike>,

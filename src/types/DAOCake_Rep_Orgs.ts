@@ -33,14 +33,19 @@ export interface DAOCake_Rep_OrgsInterface extends utils.Interface {
   functions: {
     "exists(bytes32)": FunctionFragment;
     "getOrg(bytes32)": FunctionFragment;
+    "getOrgApprovedMembers(bytes32)": FunctionFragment;
     "getOrgAtIndex(uint256)": FunctionFragment;
     "getOrgCount()": FunctionFragment;
     "getOrgMembers(bytes32)": FunctionFragment;
+    "getVotesRequired(bytes32)": FunctionFragment;
     "memberAdd(bytes32,bytes32)": FunctionFragment;
+    "memberApproved(bytes32,bytes32)": FunctionFragment;
+    "memberApprovedExists(bytes32,bytes32)": FunctionFragment;
     "memberExists(bytes32,bytes32)": FunctionFragment;
     "newOrg(bytes32,string,string,bytes32)": FunctionFragment;
     "proposalAdd(bytes32,bytes32)": FunctionFragment;
     "remOrg(bytes32)": FunctionFragment;
+    "setVotesRequired(bytes32,uint16)": FunctionFragment;
     "updateOrg(bytes32,string,string,bytes32,uint16,uint16)": FunctionFragment;
   };
 
@@ -48,14 +53,19 @@ export interface DAOCake_Rep_OrgsInterface extends utils.Interface {
     nameOrSignatureOrTopic:
       | "exists"
       | "getOrg"
+      | "getOrgApprovedMembers"
       | "getOrgAtIndex"
       | "getOrgCount"
       | "getOrgMembers"
+      | "getVotesRequired"
       | "memberAdd"
+      | "memberApproved"
+      | "memberApprovedExists"
       | "memberExists"
       | "newOrg"
       | "proposalAdd"
       | "remOrg"
+      | "setVotesRequired"
       | "updateOrg"
   ): FunctionFragment;
 
@@ -65,6 +75,10 @@ export interface DAOCake_Rep_OrgsInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getOrg",
+    values: [PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getOrgApprovedMembers",
     values: [PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
@@ -80,7 +94,19 @@ export interface DAOCake_Rep_OrgsInterface extends utils.Interface {
     values: [PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
+    functionFragment: "getVotesRequired",
+    values: [PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "memberAdd",
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "memberApproved",
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "memberApprovedExists",
     values: [PromiseOrValue<BytesLike>, PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
@@ -105,6 +131,10 @@ export interface DAOCake_Rep_OrgsInterface extends utils.Interface {
     values: [PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
+    functionFragment: "setVotesRequired",
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "updateOrg",
     values: [
       PromiseOrValue<BytesLike>,
@@ -119,6 +149,10 @@ export interface DAOCake_Rep_OrgsInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "exists", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getOrg", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "getOrgApprovedMembers",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getOrgAtIndex",
     data: BytesLike
   ): Result;
@@ -130,7 +164,19 @@ export interface DAOCake_Rep_OrgsInterface extends utils.Interface {
     functionFragment: "getOrgMembers",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "getVotesRequired",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "memberAdd", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "memberApproved",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "memberApprovedExists",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "memberExists",
     data: BytesLike
@@ -141,12 +187,16 @@ export interface DAOCake_Rep_OrgsInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "remOrg", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "setVotesRequired",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "updateOrg", data: BytesLike): Result;
 
   events: {
     "LogNewOrg(address,bytes32,string,string,bytes32,uint16,uint16)": EventFragment;
     "LogRemOrg(address,bytes32)": EventFragment;
-    "LogUpdateOrg(address,bytes32,string,string,bytes32,uint16,uint32,uint16)": EventFragment;
+    "LogUpdateOrg(address,bytes32,string,string,bytes32,uint16,uint16,uint32,uint16)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "LogNewOrg"): EventFragment;
@@ -185,11 +235,12 @@ export interface LogUpdateOrgEventObject {
   ref: string;
   memberKey: string;
   members: number;
+  membersApproved: number;
   proposals: number;
   voteForRequired: number;
 }
 export type LogUpdateOrgEvent = TypedEvent<
-  [string, string, string, string, string, number, number, number],
+  [string, string, string, string, string, number, number, number, number],
   LogUpdateOrgEventObject
 >;
 
@@ -240,6 +291,11 @@ export interface DAOCake_Rep_Orgs extends BaseContract {
       }
     >;
 
+    getOrgApprovedMembers(
+      orgKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[string[]] & { array: string[] }>;
+
     getOrgAtIndex(
       index: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -254,17 +310,34 @@ export interface DAOCake_Rep_Orgs extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string[]] & { array: string[] }>;
 
+    getVotesRequired(
+      orgKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[number] & { votesRequired: number }>;
+
     memberAdd(
       orgKey: PromiseOrValue<BytesLike>,
       memberKey: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    memberExists(
+    memberApproved(
       orgKey: PromiseOrValue<BytesLike>,
       memberKey: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
+
+    memberApprovedExists(
+      orgKey: PromiseOrValue<BytesLike>,
+      memberKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    memberExists(
+      orgKey: PromiseOrValue<BytesLike>,
+      memberKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
 
     newOrg(
       key: PromiseOrValue<BytesLike>,
@@ -282,6 +355,12 @@ export interface DAOCake_Rep_Orgs extends BaseContract {
 
     remOrg(
       key: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    setVotesRequired(
+      orgKey: PromiseOrValue<BytesLike>,
+      votesRequired: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -314,6 +393,11 @@ export interface DAOCake_Rep_Orgs extends BaseContract {
     }
   >;
 
+  getOrgApprovedMembers(
+    orgKey: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<string[]>;
+
   getOrgAtIndex(
     index: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
@@ -326,17 +410,34 @@ export interface DAOCake_Rep_Orgs extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string[]>;
 
+  getVotesRequired(
+    orgKey: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<number>;
+
   memberAdd(
     orgKey: PromiseOrValue<BytesLike>,
     memberKey: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  memberExists(
+  memberApproved(
     orgKey: PromiseOrValue<BytesLike>,
     memberKey: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
+
+  memberApprovedExists(
+    orgKey: PromiseOrValue<BytesLike>,
+    memberKey: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  memberExists(
+    orgKey: PromiseOrValue<BytesLike>,
+    memberKey: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
 
   newOrg(
     key: PromiseOrValue<BytesLike>,
@@ -354,6 +455,12 @@ export interface DAOCake_Rep_Orgs extends BaseContract {
 
   remOrg(
     key: PromiseOrValue<BytesLike>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  setVotesRequired(
+    orgKey: PromiseOrValue<BytesLike>,
+    votesRequired: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -386,6 +493,11 @@ export interface DAOCake_Rep_Orgs extends BaseContract {
       }
     >;
 
+    getOrgApprovedMembers(
+      orgKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<string[]>;
+
     getOrgAtIndex(
       index: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -398,11 +510,28 @@ export interface DAOCake_Rep_Orgs extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string[]>;
 
+    getVotesRequired(
+      orgKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<number>;
+
     memberAdd(
       orgKey: PromiseOrValue<BytesLike>,
       memberKey: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    memberApproved(
+      orgKey: PromiseOrValue<BytesLike>,
+      memberKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    memberApprovedExists(
+      orgKey: PromiseOrValue<BytesLike>,
+      memberKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
 
     memberExists(
       orgKey: PromiseOrValue<BytesLike>,
@@ -426,6 +555,12 @@ export interface DAOCake_Rep_Orgs extends BaseContract {
 
     remOrg(
       key: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setVotesRequired(
+      orgKey: PromiseOrValue<BytesLike>,
+      votesRequired: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -466,13 +601,14 @@ export interface DAOCake_Rep_Orgs extends BaseContract {
     ): LogRemOrgEventFilter;
     LogRemOrg(sender?: null, key?: null): LogRemOrgEventFilter;
 
-    "LogUpdateOrg(address,bytes32,string,string,bytes32,uint16,uint32,uint16)"(
+    "LogUpdateOrg(address,bytes32,string,string,bytes32,uint16,uint16,uint32,uint16)"(
       sender?: null,
       key?: null,
       name?: null,
       ref?: null,
       memberKey?: null,
       members?: null,
+      membersApproved?: null,
       proposals?: null,
       voteForRequired?: null
     ): LogUpdateOrgEventFilter;
@@ -483,6 +619,7 @@ export interface DAOCake_Rep_Orgs extends BaseContract {
       ref?: null,
       memberKey?: null,
       members?: null,
+      membersApproved?: null,
       proposals?: null,
       voteForRequired?: null
     ): LogUpdateOrgEventFilter;
@@ -499,6 +636,11 @@ export interface DAOCake_Rep_Orgs extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getOrgApprovedMembers(
+      orgKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getOrgAtIndex(
       index: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -511,16 +653,33 @@ export interface DAOCake_Rep_Orgs extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getVotesRequired(
+      orgKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     memberAdd(
       orgKey: PromiseOrValue<BytesLike>,
       memberKey: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    memberExists(
+    memberApproved(
       orgKey: PromiseOrValue<BytesLike>,
       memberKey: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    memberApprovedExists(
+      orgKey: PromiseOrValue<BytesLike>,
+      memberKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    memberExists(
+      orgKey: PromiseOrValue<BytesLike>,
+      memberKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     newOrg(
@@ -539,6 +698,12 @@ export interface DAOCake_Rep_Orgs extends BaseContract {
 
     remOrg(
       key: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    setVotesRequired(
+      orgKey: PromiseOrValue<BytesLike>,
+      votesRequired: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -564,6 +729,11 @@ export interface DAOCake_Rep_Orgs extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    getOrgApprovedMembers(
+      orgKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     getOrgAtIndex(
       index: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -576,16 +746,33 @@ export interface DAOCake_Rep_Orgs extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    getVotesRequired(
+      orgKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     memberAdd(
       orgKey: PromiseOrValue<BytesLike>,
       memberKey: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    memberExists(
+    memberApproved(
       orgKey: PromiseOrValue<BytesLike>,
       memberKey: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    memberApprovedExists(
+      orgKey: PromiseOrValue<BytesLike>,
+      memberKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    memberExists(
+      orgKey: PromiseOrValue<BytesLike>,
+      memberKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     newOrg(
@@ -604,6 +791,12 @@ export interface DAOCake_Rep_Orgs extends BaseContract {
 
     remOrg(
       key: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setVotesRequired(
+      orgKey: PromiseOrValue<BytesLike>,
+      votesRequired: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

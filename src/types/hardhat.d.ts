@@ -40,6 +40,10 @@ declare module "hardhat/types/runtime" {
       name: "HitchensUnorderedKeySet",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.HitchensUnorderedKeySet__factory>;
+    getContractFactory(
+      name: "Migrations",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Migrations__factory>;
 
     getContractAt(
       name: "DAOCake_Rep_Members",
@@ -76,6 +80,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.HitchensUnorderedKeySet>;
+    getContractAt(
+      name: "Migrations",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Migrations>;
 
     // default types
     getContractFactory(

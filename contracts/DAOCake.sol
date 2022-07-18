@@ -1,5 +1,5 @@
 // SPDX-License-Identifier
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.6;
 
 import "./HitchensUnorderedKeySet.sol";
 //import "./Ownable.sol";
@@ -18,11 +18,11 @@ contract DAOCake {
 
     //Owner owner;
 
-    DAOCake_Rep_Orgs org = new DAOCake_Rep_Orgs();
-    DAOCake_Rep_Members member = new DAOCake_Rep_Members();
+    DAOCake_Rep_Orgs _org = new DAOCake_Rep_Orgs();
+    DAOCake_Rep_Members _member = new DAOCake_Rep_Members();
 
-    DAOCake_Rep_Proposals proposal = new DAOCake_Rep_Proposals();
-    DAOCake_Rep_Votes vote = new DAOCake_Rep_Votes();
+    DAOCake_Rep_Proposals _proposal = new DAOCake_Rep_Proposals();
+    DAOCake_Rep_Votes _vote = new DAOCake_Rep_Votes();
 
     //DAOCake_Entities.MemberStruct memberTest;
 
@@ -36,18 +36,18 @@ contract DAOCake {
         string memory memberName
     ) public {
         //address sender = msg.sender;
-        bytes32 memberKey = member.addressToBytes32(msg.sender);
+        bytes32 memberKey = _member.addressToBytes32(msg.sender);
 
-        org.newOrg(orgKey, orgName, orgRef, memberKey);
+        _org.newOrg(orgKey, orgName, orgRef, memberKey);
         // check if repository has this member (separate from org.members)
-        if (!member.exists(memberKey)) {
-            member.newMember(memberKey, memberName, false, 20);
+        if (!_member.exists(memberKey)) {
+            _member.newMember(memberKey, memberName, false, 20);
             // org.memberAdd(orgKey, memberKey); <-- note: called internally
         }
     }
 
     function simpleAddMe(bytes32 orgKey, string memory memberName) public {
-        bytes32 memberKey = member.addressToBytes32(msg.sender);
+        bytes32 memberKey = _member.addressToBytes32(msg.sender);
         simpleAddMember(orgKey, memberKey, memberName);
     }
 
@@ -56,9 +56,9 @@ contract DAOCake {
         bytes32 memberKey,
         string memory memberName
     ) public {
-        if (!member.exists(memberKey)) {
-            member.newMember(memberKey, memberName, false, 20);
-            org.memberAdd(orgKey, memberKey);
+        if (!_member.exists(memberKey)) {
+            _member.newMember(memberKey, memberName, false, 20);
+            _org.memberAdd(orgKey, memberKey);
         }
     }
 
@@ -73,11 +73,11 @@ contract DAOCake {
             uint16 voteForRequired
         )
     {
-        return org.getOrg(orgKey);
+        return _org.getOrg(orgKey);
     }
 
     function getMembersOfOrg(bytes32 orgKey) public view returns (bytes32[] memory array) {
-        return org.getOrgMembers(orgKey);
+        return _org.getOrgMembers(orgKey);
     }
 
     // getOrgsCreatedBy(bytes32 memberKey)
@@ -99,14 +99,14 @@ contract DAOCake {
         string memory ref_id,
         uint256 douAmount
     ) public {
-        bytes32 memberKey = member.addressToBytes32(msg.sender);
-        require(org.memberExists(orgKey, memberKey), "Member must be part of the Org");
+        bytes32 memberKey = _member.addressToBytes32(msg.sender);
+        require(_org.memberExists(orgKey, memberKey), "Member must be part of the Org");
 
-        uint16 votesRequired = org.getVotesRequired(orgKey);
+        uint16 votesRequired = _org.getVotesRequired(orgKey);
 
         // check if repository has this Proposal (separate from org.poposals)
-        if (!proposal.exists(proposalKey)) {
-            proposal.newProposal(
+        if (!_proposal.exists(proposalKey)) {
+            _proposal.newProposal(
                 proposalKey,
                 //orgKey,
                 memberKey,
@@ -118,7 +118,7 @@ contract DAOCake {
                 votesRequired,
                 DAOCake_Entities.ProposalType.PAY
             );
-            org.proposalAdd(orgKey, proposalKey);
+            _org.proposalAdd(orgKey, proposalKey);
         }
     }
 
@@ -139,7 +139,7 @@ contract DAOCake {
         bytes32 proposalKey,
         bool voteFor
     ) public {
-        bytes32 memberKey = member.addressToBytes32(msg.sender);
+        bytes32 memberKey = _member.addressToBytes32(msg.sender);
         castVoteAsMember(orgKey, voteKey, proposalKey, memberKey, voteFor);
     }
 
@@ -152,25 +152,25 @@ contract DAOCake {
         bool voteFor
     ) public {
         //bytes32 memberKey = member.addressToBytes32(msg.sender);
-        require(org.memberExists(orgKey, memberKey), "Member must be part of the Org to Vote");
+        require(_org.memberExists(orgKey, memberKey), "Member must be part of the Org to Vote");
 
         // check if repository has this Proposal (separate from org.poposals)
-        if (!proposal.exists(proposalKey)) {
+        if (!_proposal.exists(proposalKey)) {
             DAOCake_Entities.ProposalType action; // if
             uint256 newVal = 0;
 
             // returns action & value when the proposal condition is met
-            (action, newVal) = proposal.voteAdd(proposalKey, memberKey, voteFor);
-            vote.newVote(voteKey, proposalKey, memberKey, voteFor);
+            (action, newVal) = _proposal.voteAdd(proposalKey, memberKey, voteFor);
+            _vote.newVote(voteKey, proposalKey, memberKey, voteFor);
 
             // check if votes met to close this proposal
 
             if (action == DAOCake_Entities.ProposalType.NEW_MEMBER) // 'updateMemberAsApproved'
             {
-                org.memberApproved(orgKey, memberKey);
+                _org.memberApproved(orgKey, memberKey);
             } else if (action == DAOCake_Entities.ProposalType.ORG_RULES) // 'updateMemberVoteRules'
             {
-                org.setVotesRequired(orgKey, uint16(newVal));
+                _org.setVotesRequired(orgKey, uint16(newVal));
             }
         }
     }
