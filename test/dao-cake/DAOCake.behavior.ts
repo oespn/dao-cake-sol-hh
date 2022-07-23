@@ -1,15 +1,26 @@
 import { expect } from "chai";
+import web3 from "web3";
+
+//import  helpers  from "../helpers.js";
 
 export function shouldBehaveLikeDAOCake(): void {
   const org = "0x017d8503e20341a382cd213ce3684aac017d8503e20341a382cd213ce3684aac";
 
-  const bob = "0x011d8503e20341a382cd213ce3684aac017d8503e20341a382cd213ce3684aa1";
+  //const bob = "0x011d8503e20341a382cd213ce3684aac017d8503e20341a382cd213ce3684aa1";
   //const carol = "0x011d8503e20341a382cd213ce3684aac017d8503e20341a382cd213ce3684aa2";
 
-  const voteDB = "0x013d8503e20341a382cd213ce3684aac017d8503e20341a382cd213ce3684aa0";
+  const voteDB1 = "0x013d8503e20341a382cd213ce3684aac017d8503e20341a382cd213ce3684aa1";
+  const voteDB2 = "0x013d8503e20341a382cd213ce3684aac017d8503e20341a382cd213ce3684aa2";
+  const propDB = "0x014d8503e20341a382cd213ce3684aac017d8503e20341a382cd213ce3684aa0";
 
   it("should return the new org once it's created", async function () {
     //expect(await this.daoCake.connect(this.signers.admin).getOrg(org)).to.equal("");
+
+    const aliceBN = web3.utils.toBN(this.signers.alice.address);
+    const alice = "0x" + aliceBN.toTwos(256).toString("hex", 64);
+
+    const bobBN = web3.utils.toBN(this.signers.bob.address);
+    const bob = "0x" + bobBN.toTwos(256).toString("hex", 64);
 
     await this.daoCake.createOrg(org, "Org1", "Ref1", "Fred1"); // as admin
     const res = await this.daoCake.connect(this.signers.admin).getOrg(org);
@@ -18,43 +29,64 @@ export function shouldBehaveLikeDAOCake(): void {
 
     // Member apply, proposal and vote
 
+    await this.daoCake.simpleAddMember(org, alice, "Alice");
     await this.daoCake.simpleAddMember(org, bob, "Bob");
+
     const resMembers = await this.daoCake.connect(this.signers.admin).getMembersOfOrg(org);
     console.log("getMembersOfOrg", resMembers);
-    expect(resMembers).contains(bob);
+    expect(resMembers).contains(alice);
 
-    // Bob won't be approved yet
+    // Alice won't be approved yet
 
     const resMembers2 = await this.daoCake.connect(this.signers.admin).getApprovedMembersOfOrg(org);
     console.log("getApprovedMembersOfOrg", resMembers2);
-    expect(resMembers2).not.contains(bob);
+    expect(resMembers2).not.contains(alice);
 
     // show the data of proposals
 
-    const resProposal1 = await this.daoCake.connect(this.signers.admin).getProposalData(bob);
-    console.log("getProposalData:" + bob, resProposal1);
+    const resProposal1 = await this.daoCake.connect(this.signers.admin).getProposalData(alice);
+    console.log("getProposalData:" + alice, resProposal1);
 
     // const resProposals1 = await this.daoCake.connect(this.signers.admin).getProposalsOfOrgData(org);
     // console.log(resProposals1);
-    // //expect(resProposals1).not.contains(bob);
+    // //expect(resProposals1).not.contains(alice);
 
-    const proposalBob = bob;
+    const proposalAlice = alice;
     console.log("cast vote as:", this.signers.admin.address);
-    await this.daoCake.castVote(org, voteDB, proposalBob, true); // as admin vote for bob
+    await this.daoCake.castVote(org, voteDB1, proposalAlice, true); // as admin vote for alice
 
-    const resVotes1 = await this.daoCake.connect(this.signers.admin).getVotesOfProposal(proposalBob);
+    const resVotes1 = await this.daoCake.connect(this.signers.admin).getVotesOfProposal(proposalAlice);
     console.log("getProposalVotes", resVotes1);
     // list of members who have voted
-    //expect(resVotes1).contains(bob);
+    //expect(resVotes1).contains(alice);
 
-    const resVotesData = await this.daoCake.connect(this.signers.admin).getVotesOfProposalData(proposalBob);
+    const resVotesData = await this.daoCake.connect(this.signers.admin).getVotesOfProposalData(proposalAlice);
     console.log("getVotesOfProposalData", resVotesData);
 
     const resMembers3 = await this.daoCake.connect(this.signers.admin).getApprovedMembersOfOrg(org);
     console.log("getApprovedMembersOfOrg after vote", resMembers3);
-    expect(resMembers3).contains(bob);
+    expect(resMembers3).contains(alice);
 
-    // const resVote = await this.daoCake.connect(this.signers.admin).getProposalsOfOrgData(org);
-    // console.log(resVote);
+    const resVote = await this.daoCake.connect(this.signers.admin).getProposalsOfOrgData(org);
+    console.log("Proposals after Vote:", resVote);
+
+    // let Alice raise a claim
+    await this.daoCake.createClaim(propDB, org, "my claim", "claim id", "doc_cid", "ref_id", 1000);
+    const resClaim = await this.daoCake.connect(this.signers.admin).getProposalsOfOrgData(org);
+    console.log("Proposals after Claim:", resClaim);
+
+    //-- RAISE ERROR CASES: remove comment //-- to test
+
+    // Bob Not Approved attempt to vote
+    //-- console.log("cast vote as bob", bob);
+    //-- await this.daoCake.castVoteAsMember(org, voteDB2, propDB, bob, true);
+    //-- --- EXPECT throw:  'Member must be Approved in the Org to Vote'
+
+    const resClaim2 = await this.daoCake.connect(this.signers.admin).getProposalsOfOrgData(org);
+    console.log("Proposals after Claim:", resClaim2);
+
+    // let admin approve
+
+    // check alice's share of cake
   });
 }

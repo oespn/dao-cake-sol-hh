@@ -121,7 +121,7 @@ contract DAOCake {
 
     function getProposalsOfOrgData(bytes32 orgKey) public view returns (DAOCake_Entities.ProposalReturn[] memory) {
         bytes32[] memory array = _org.getOrgProposals(orgKey);
-        DAOCake_Entities.ProposalReturn[] memory pData;
+        DAOCake_Entities.ProposalReturn[] memory pData = new DAOCake_Entities.ProposalReturn[](array.length);
         for (uint16 i = 0; i < array.length; i++) {
             pData[i] = _proposal.getProposal(array[i]);
         }
@@ -210,6 +210,7 @@ contract DAOCake {
     ) public {
         //bytes32 memberKey = member.addressToBytes32(msg.sender);
         require(_org.memberExists(orgKey, memberKey), "Member must be part of the Org to Vote");
+        require(_org.memberApprovedExists(orgKey, memberKey), "Member must be Approved in the Org to Vote");
 
         // check if repository has this Proposal (separate from org.poposals)
         if (_proposal.exists(proposalKey)) {
