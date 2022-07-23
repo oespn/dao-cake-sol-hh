@@ -68,7 +68,7 @@ contract DAOCake_Rep_Proposals {
 
     function newProposal(
         bytes32 key,
-        //bytes32 orgKey,
+        bytes32 orgKey,
         bytes32 memberKey,
         string memory name,
         string memory uuid,
@@ -83,6 +83,7 @@ contract DAOCake_Rep_Proposals {
         // PRE: require (org[orgKey]member.exists(memberKey)) handled externally
 
         DAOCake_Entities.ProposalStruct storage o = proposals[key];
+        o.orgKey = orgKey;
 
         o.memberKey = memberKey;
         o.name = name;
@@ -99,7 +100,7 @@ contract DAOCake_Rep_Proposals {
         o.nVotesRequired = votesRequired;
         // add member's vote
         o.nVotes = 1;
-        o.votes.push(memberKey);
+        o.votes.push(memberKey); // voteKey of own vote is members key
         o.hasVoted[memberKey] = true;
         // store ForVote attributes
         o.nVotesFor = 1;
@@ -121,6 +122,7 @@ contract DAOCake_Rep_Proposals {
     }
 
     function voteAdd(
+        bytes32 voteKey,
         bytes32 proposalKey,
         bytes32 memberKey,
         bool voteFor
@@ -135,7 +137,7 @@ contract DAOCake_Rep_Proposals {
         if (p.hasVoted[memberKey] == false) {
             p.nVotes = p.nVotes + 1;
             // deref with: m = o.votes[nVotes];
-            p.votes.push(memberKey);
+            p.votes.push(voteKey);
             p.hasVoted[memberKey] = true;
 
             // 'voteFor' get counted and members accounted
@@ -172,6 +174,7 @@ contract DAOCake_Rep_Proposals {
             p.proposalType,
             p.decision // emit result
         );
+        return (action, value);
     }
 
     function getVotesCount(bytes32 proposalKey)
@@ -223,24 +226,34 @@ contract DAOCake_Rep_Proposals {
         emit LogRemProposal(msg.sender, key);
     }
 
-    function getProposal(bytes32 key)
-        public
-        view
-        returns (
-            bytes32 orgKey,
-            bytes32 memberKey,
-            string memory name,
-            string memory uuid,
-            string memory doc_cid,
-            string memory ref_id,
-            uint256 total,
-            uint16 nVotes,
-            DAOCake_Entities.ProposalType proposalType
-        )
+    function getProposal(bytes32 key) public view returns (DAOCake_Entities.ProposalReturn memory r) // (
+    //     bytes32 orgKey,
+    //     bytes32 memberKey,
+    //     string memory name,
+    //     string memory uuid,
+    //     string memory doc_cid,
+    //     string memory ref_id,
+    //     uint256 total,
+    //     uint16 nVotes,
+    //     DAOCake_Entities.ProposalType proposalType,
+    //     DAOCake_Entities.DecisionStatus decision
+    // )
     {
         require(proposalSet.exists(key), "Can't get a Proposal that doesn't exist.");
         DAOCake_Entities.ProposalStruct storage p = proposals[key];
-        return (p.orgKey, p.memberKey, p.name, p.uuid, p.doc_cid, p.ref_id, p.total, p.nVotes, p.proposalType);
+        r.orgKey = p.orgKey;
+        r.memberKey = p.memberKey;
+        r.name = p.name;
+        r.uuid = p.uuid;
+        r.doc_cid = p.doc_cid;
+        r.ref_id = p.ref_id;
+        r.total = p.total;
+        r.nVotes = p.nVotes;
+        r.proposalType = p.proposalType;
+        r.decision = p.decision;
+        return r;
+        //new DAOCake_Entities.ProposalReturn (p.orgKey, p.memberKey, p.name, p.uuid, p.doc_cid, p.ref_id, p.total, p.nVotes, p.proposalType, p.decision);
+        //(p.orgKey, p.memberKey, p.name, p.uuid, p.doc_cid, p.ref_id, p.total, p.nVotes, p.proposalType, p.decision);
     }
 
     function getProposalCount() public view returns (uint256 count) {

@@ -25,14 +25,71 @@ import type {
   utils,
 } from "ethers";
 
+export declare namespace DAOCake_Entities {
+  export type ProposalReturnStruct = {
+    orgKey: PromiseOrValue<BytesLike>;
+    memberKey: PromiseOrValue<BytesLike>;
+    name: PromiseOrValue<string>;
+    uuid: PromiseOrValue<string>;
+    doc_cid: PromiseOrValue<string>;
+    ref_id: PromiseOrValue<string>;
+    total: PromiseOrValue<BigNumberish>;
+    nVotes: PromiseOrValue<BigNumberish>;
+    proposalType: PromiseOrValue<BigNumberish>;
+    decision: PromiseOrValue<BigNumberish>;
+  };
+
+  export type ProposalReturnStructOutput = [
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    BigNumber,
+    number,
+    number,
+    number
+  ] & {
+    orgKey: string;
+    memberKey: string;
+    name: string;
+    uuid: string;
+    doc_cid: string;
+    ref_id: string;
+    total: BigNumber;
+    nVotes: number;
+    proposalType: number;
+    decision: number;
+  };
+
+  export type VoteStructStruct = {
+    proposalKey: PromiseOrValue<BytesLike>;
+    memberKey: PromiseOrValue<BytesLike>;
+    voteFor: PromiseOrValue<boolean>;
+  };
+
+  export type VoteStructStructOutput = [string, string, boolean] & {
+    proposalKey: string;
+    memberKey: string;
+    voteFor: boolean;
+  };
+}
+
 export interface DAOCakeInterface extends utils.Interface {
   functions: {
     "castVote(bytes32,bytes32,bytes32,bool)": FunctionFragment;
     "castVoteAsMember(bytes32,bytes32,bytes32,bytes32,bool)": FunctionFragment;
     "createClaim(bytes32,bytes32,string,string,string,string,uint256)": FunctionFragment;
     "createOrg(bytes32,string,string,string)": FunctionFragment;
+    "getApprovedMembersOfOrg(bytes32)": FunctionFragment;
     "getMembersOfOrg(bytes32)": FunctionFragment;
     "getOrg(bytes32)": FunctionFragment;
+    "getProposalData(bytes32)": FunctionFragment;
+    "getProposalsOfOrg(bytes32)": FunctionFragment;
+    "getProposalsOfOrgData(bytes32)": FunctionFragment;
+    "getVotesOfProposal(bytes32)": FunctionFragment;
+    "getVotesOfProposalData(bytes32)": FunctionFragment;
     "simpleAddMe(bytes32,string)": FunctionFragment;
     "simpleAddMember(bytes32,bytes32,string)": FunctionFragment;
   };
@@ -43,8 +100,14 @@ export interface DAOCakeInterface extends utils.Interface {
       | "castVoteAsMember"
       | "createClaim"
       | "createOrg"
+      | "getApprovedMembersOfOrg"
       | "getMembersOfOrg"
       | "getOrg"
+      | "getProposalData"
+      | "getProposalsOfOrg"
+      | "getProposalsOfOrgData"
+      | "getVotesOfProposal"
+      | "getVotesOfProposalData"
       | "simpleAddMe"
       | "simpleAddMember"
   ): FunctionFragment;
@@ -90,11 +153,35 @@ export interface DAOCakeInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
+    functionFragment: "getApprovedMembersOfOrg",
+    values: [PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "getMembersOfOrg",
     values: [PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
     functionFragment: "getOrg",
+    values: [PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getProposalData",
+    values: [PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getProposalsOfOrg",
+    values: [PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getProposalsOfOrgData",
+    values: [PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getVotesOfProposal",
+    values: [PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getVotesOfProposalData",
     values: [PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
@@ -121,10 +208,34 @@ export interface DAOCakeInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "createOrg", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "getApprovedMembersOfOrg",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getMembersOfOrg",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "getOrg", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "getProposalData",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getProposalsOfOrg",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getProposalsOfOrgData",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getVotesOfProposal",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getVotesOfProposalData",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "simpleAddMe",
     data: BytesLike
@@ -200,6 +311,11 @@ export interface DAOCake extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    getApprovedMembersOfOrg(
+      orgKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[string[]] & { array: string[] }>;
+
     getMembersOfOrg(
       orgKey: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
@@ -217,6 +333,35 @@ export interface DAOCake extends BaseContract {
         voteForRequired: number;
       }
     >;
+
+    getProposalData(
+      proposalKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<
+      [DAOCake_Entities.ProposalReturnStructOutput] & {
+        r: DAOCake_Entities.ProposalReturnStructOutput;
+      }
+    >;
+
+    getProposalsOfOrg(
+      orgKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[string[]] & { array: string[] }>;
+
+    getProposalsOfOrgData(
+      orgKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[DAOCake_Entities.ProposalReturnStructOutput[]]>;
+
+    getVotesOfProposal(
+      proposalKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[string[]] & { array: string[] }>;
+
+    getVotesOfProposalData(
+      proposalKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[DAOCake_Entities.VoteStructStructOutput[]]>;
 
     simpleAddMe(
       orgKey: PromiseOrValue<BytesLike>,
@@ -268,6 +413,11 @@ export interface DAOCake extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  getApprovedMembersOfOrg(
+    orgKey: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<string[]>;
+
   getMembersOfOrg(
     orgKey: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides
@@ -285,6 +435,31 @@ export interface DAOCake extends BaseContract {
       voteForRequired: number;
     }
   >;
+
+  getProposalData(
+    proposalKey: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<DAOCake_Entities.ProposalReturnStructOutput>;
+
+  getProposalsOfOrg(
+    orgKey: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<string[]>;
+
+  getProposalsOfOrgData(
+    orgKey: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<DAOCake_Entities.ProposalReturnStructOutput[]>;
+
+  getVotesOfProposal(
+    proposalKey: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<string[]>;
+
+  getVotesOfProposalData(
+    proposalKey: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<DAOCake_Entities.VoteStructStructOutput[]>;
 
   simpleAddMe(
     orgKey: PromiseOrValue<BytesLike>,
@@ -336,6 +511,11 @@ export interface DAOCake extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    getApprovedMembersOfOrg(
+      orgKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<string[]>;
+
     getMembersOfOrg(
       orgKey: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
@@ -353,6 +533,31 @@ export interface DAOCake extends BaseContract {
         voteForRequired: number;
       }
     >;
+
+    getProposalData(
+      proposalKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<DAOCake_Entities.ProposalReturnStructOutput>;
+
+    getProposalsOfOrg(
+      orgKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<string[]>;
+
+    getProposalsOfOrgData(
+      orgKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<DAOCake_Entities.ProposalReturnStructOutput[]>;
+
+    getVotesOfProposal(
+      proposalKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<string[]>;
+
+    getVotesOfProposalData(
+      proposalKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<DAOCake_Entities.VoteStructStructOutput[]>;
 
     simpleAddMe(
       orgKey: PromiseOrValue<BytesLike>,
@@ -407,6 +612,11 @@ export interface DAOCake extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    getApprovedMembersOfOrg(
+      orgKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getMembersOfOrg(
       orgKey: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
@@ -414,6 +624,31 @@ export interface DAOCake extends BaseContract {
 
     getOrg(
       orgKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getProposalData(
+      proposalKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getProposalsOfOrg(
+      orgKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getProposalsOfOrgData(
+      orgKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getVotesOfProposal(
+      proposalKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getVotesOfProposalData(
+      proposalKey: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -468,6 +703,11 @@ export interface DAOCake extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    getApprovedMembersOfOrg(
+      orgKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     getMembersOfOrg(
       orgKey: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
@@ -475,6 +715,31 @@ export interface DAOCake extends BaseContract {
 
     getOrg(
       orgKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getProposalData(
+      proposalKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getProposalsOfOrg(
+      orgKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getProposalsOfOrgData(
+      orgKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getVotesOfProposal(
+      proposalKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getVotesOfProposalData(
+      proposalKey: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

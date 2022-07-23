@@ -29,6 +29,45 @@ import type {
   utils,
 } from "ethers";
 
+export declare namespace DAOCake_Entities {
+  export type ProposalReturnStruct = {
+    orgKey: PromiseOrValue<BytesLike>;
+    memberKey: PromiseOrValue<BytesLike>;
+    name: PromiseOrValue<string>;
+    uuid: PromiseOrValue<string>;
+    doc_cid: PromiseOrValue<string>;
+    ref_id: PromiseOrValue<string>;
+    total: PromiseOrValue<BigNumberish>;
+    nVotes: PromiseOrValue<BigNumberish>;
+    proposalType: PromiseOrValue<BigNumberish>;
+    decision: PromiseOrValue<BigNumberish>;
+  };
+
+  export type ProposalReturnStructOutput = [
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    BigNumber,
+    number,
+    number,
+    number
+  ] & {
+    orgKey: string;
+    memberKey: string;
+    name: string;
+    uuid: string;
+    doc_cid: string;
+    ref_id: string;
+    total: BigNumber;
+    nVotes: number;
+    proposalType: number;
+    decision: number;
+  };
+}
+
 export interface DAOCake_Rep_ProposalsInterface extends utils.Interface {
   functions: {
     "exists(bytes32)": FunctionFragment;
@@ -37,9 +76,9 @@ export interface DAOCake_Rep_ProposalsInterface extends utils.Interface {
     "getProposalCount()": FunctionFragment;
     "getProposalVotes(bytes32)": FunctionFragment;
     "getVotesCount(bytes32)": FunctionFragment;
-    "newProposal(bytes32,bytes32,string,string,string,string,uint256,uint16,uint8)": FunctionFragment;
+    "newProposal(bytes32,bytes32,bytes32,string,string,string,string,uint256,uint16,uint8)": FunctionFragment;
     "remProposal(bytes32)": FunctionFragment;
-    "voteAdd(bytes32,bytes32,bool)": FunctionFragment;
+    "voteAdd(bytes32,bytes32,bytes32,bool)": FunctionFragment;
   };
 
   getFunction(
@@ -84,6 +123,7 @@ export interface DAOCake_Rep_ProposalsInterface extends utils.Interface {
     values: [
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>,
       PromiseOrValue<string>,
       PromiseOrValue<string>,
       PromiseOrValue<string>,
@@ -100,6 +140,7 @@ export interface DAOCake_Rep_ProposalsInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "voteAdd",
     values: [
+      PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>,
       PromiseOrValue<boolean>
@@ -262,26 +303,8 @@ export interface DAOCake_Rep_Proposals extends BaseContract {
       key: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<
-      [
-        string,
-        string,
-        string,
-        string,
-        string,
-        string,
-        BigNumber,
-        number,
-        number
-      ] & {
-        orgKey: string;
-        memberKey: string;
-        name: string;
-        uuid: string;
-        doc_cid: string;
-        ref_id: string;
-        total: BigNumber;
-        nVotes: number;
-        proposalType: number;
+      [DAOCake_Entities.ProposalReturnStructOutput] & {
+        r: DAOCake_Entities.ProposalReturnStructOutput;
       }
     >;
 
@@ -312,6 +335,7 @@ export interface DAOCake_Rep_Proposals extends BaseContract {
 
     newProposal(
       key: PromiseOrValue<BytesLike>,
+      orgKey: PromiseOrValue<BytesLike>,
       memberKey: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<string>,
       uuid: PromiseOrValue<string>,
@@ -329,6 +353,7 @@ export interface DAOCake_Rep_Proposals extends BaseContract {
     ): Promise<ContractTransaction>;
 
     voteAdd(
+      voteKey: PromiseOrValue<BytesLike>,
       proposalKey: PromiseOrValue<BytesLike>,
       memberKey: PromiseOrValue<BytesLike>,
       voteFor: PromiseOrValue<boolean>,
@@ -344,29 +369,7 @@ export interface DAOCake_Rep_Proposals extends BaseContract {
   getProposal(
     key: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides
-  ): Promise<
-    [
-      string,
-      string,
-      string,
-      string,
-      string,
-      string,
-      BigNumber,
-      number,
-      number
-    ] & {
-      orgKey: string;
-      memberKey: string;
-      name: string;
-      uuid: string;
-      doc_cid: string;
-      ref_id: string;
-      total: BigNumber;
-      nVotes: number;
-      proposalType: number;
-    }
-  >;
+  ): Promise<DAOCake_Entities.ProposalReturnStructOutput>;
 
   getProposalAtIndex(
     index: PromiseOrValue<BigNumberish>,
@@ -393,6 +396,7 @@ export interface DAOCake_Rep_Proposals extends BaseContract {
 
   newProposal(
     key: PromiseOrValue<BytesLike>,
+    orgKey: PromiseOrValue<BytesLike>,
     memberKey: PromiseOrValue<BytesLike>,
     name: PromiseOrValue<string>,
     uuid: PromiseOrValue<string>,
@@ -410,6 +414,7 @@ export interface DAOCake_Rep_Proposals extends BaseContract {
   ): Promise<ContractTransaction>;
 
   voteAdd(
+    voteKey: PromiseOrValue<BytesLike>,
     proposalKey: PromiseOrValue<BytesLike>,
     memberKey: PromiseOrValue<BytesLike>,
     voteFor: PromiseOrValue<boolean>,
@@ -425,29 +430,7 @@ export interface DAOCake_Rep_Proposals extends BaseContract {
     getProposal(
       key: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
-    ): Promise<
-      [
-        string,
-        string,
-        string,
-        string,
-        string,
-        string,
-        BigNumber,
-        number,
-        number
-      ] & {
-        orgKey: string;
-        memberKey: string;
-        name: string;
-        uuid: string;
-        doc_cid: string;
-        ref_id: string;
-        total: BigNumber;
-        nVotes: number;
-        proposalType: number;
-      }
-    >;
+    ): Promise<DAOCake_Entities.ProposalReturnStructOutput>;
 
     getProposalAtIndex(
       index: PromiseOrValue<BigNumberish>,
@@ -474,6 +457,7 @@ export interface DAOCake_Rep_Proposals extends BaseContract {
 
     newProposal(
       key: PromiseOrValue<BytesLike>,
+      orgKey: PromiseOrValue<BytesLike>,
       memberKey: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<string>,
       uuid: PromiseOrValue<string>,
@@ -491,6 +475,7 @@ export interface DAOCake_Rep_Proposals extends BaseContract {
     ): Promise<void>;
 
     voteAdd(
+      voteKey: PromiseOrValue<BytesLike>,
       proposalKey: PromiseOrValue<BytesLike>,
       memberKey: PromiseOrValue<BytesLike>,
       voteFor: PromiseOrValue<boolean>,
@@ -592,6 +577,7 @@ export interface DAOCake_Rep_Proposals extends BaseContract {
 
     newProposal(
       key: PromiseOrValue<BytesLike>,
+      orgKey: PromiseOrValue<BytesLike>,
       memberKey: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<string>,
       uuid: PromiseOrValue<string>,
@@ -609,6 +595,7 @@ export interface DAOCake_Rep_Proposals extends BaseContract {
     ): Promise<BigNumber>;
 
     voteAdd(
+      voteKey: PromiseOrValue<BytesLike>,
       proposalKey: PromiseOrValue<BytesLike>,
       memberKey: PromiseOrValue<BytesLike>,
       voteFor: PromiseOrValue<boolean>,
@@ -646,6 +633,7 @@ export interface DAOCake_Rep_Proposals extends BaseContract {
 
     newProposal(
       key: PromiseOrValue<BytesLike>,
+      orgKey: PromiseOrValue<BytesLike>,
       memberKey: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<string>,
       uuid: PromiseOrValue<string>,
@@ -663,6 +651,7 @@ export interface DAOCake_Rep_Proposals extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     voteAdd(
+      voteKey: PromiseOrValue<BytesLike>,
       proposalKey: PromiseOrValue<BytesLike>,
       memberKey: PromiseOrValue<BytesLike>,
       voteFor: PromiseOrValue<boolean>,

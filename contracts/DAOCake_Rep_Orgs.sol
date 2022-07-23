@@ -168,6 +168,8 @@ contract DAOCake_Rep_Orgs {
         o.voteForRequired = votesRequired;
     }
 
+    // Proposals associated with Org
+
     function proposalAdd(bytes32 orgKey, bytes32 proposalKey) public {
         require(orgSet.exists(orgKey), "Can't add to an Org that doesn't exist.");
         DAOCake_Entities.OrgStruct storage o = orgs[orgKey];
@@ -190,6 +192,12 @@ contract DAOCake_Rep_Orgs {
             o.nProposals,
             o.voteForRequired
         );
+    }
+
+    function getOrgProposals(bytes32 orgKey) public view returns (bytes32[] memory array) {
+        require(orgSet.exists(orgKey), "Can't get an Org that doesn't exist.");
+        DAOCake_Entities.OrgStruct storage o = orgs[orgKey];
+        return (o.proposals);
     }
 
     function updateOrg(

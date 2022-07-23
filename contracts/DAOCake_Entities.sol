@@ -72,4 +72,20 @@ contract DAOCake_Entities {
         bool voteFor; // or Against == false
     }
     // key: mapping(bytes32 => VoteStruct) votes;
+
+    /// Explicit return models for external use
+    /// Use above structs where no difference required
+
+    struct ProposalReturn {
+        bytes32 orgKey;
+        bytes32 memberKey;
+        string name;
+        string uuid;
+        string doc_cid;
+        string ref_id;
+        uint256 total;
+        uint16 nVotes;
+        ProposalType proposalType;
+        DecisionStatus decision;
+    }
 }

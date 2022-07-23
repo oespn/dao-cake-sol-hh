@@ -60,18 +60,16 @@ contract DAOCake_Rep_Votes {
     //     emit LogRemVote(msg.sender, key);
     // }
 
-    function getVote(bytes32 key)
-        public
-        view
-        returns (
-            bytes32 proposalKey,
-            bytes32 memberKey,
-            bool voteFor
-        )
+    function getVote(bytes32 key) public view returns (DAOCake_Entities.VoteStruct memory) // returns (
+    //     bytes32 proposalKey,
+    //     bytes32 memberKey,
+    //     bool voteFor
+    // )
     {
         require(voteSet.exists(key), "Can't get a Vote that doesn't exist.");
         DAOCake_Entities.VoteStruct storage v = votes[key];
-        return (v.proposalKey, v.memberKey, v.voteFor);
+        return v;
+        //(v.proposalKey, v.memberKey, v.voteFor);
     }
 
     function getVoteCount() public view returns (uint256 count) {

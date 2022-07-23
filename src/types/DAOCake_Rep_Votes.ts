@@ -29,6 +29,20 @@ import type {
   utils,
 } from "ethers";
 
+export declare namespace DAOCake_Entities {
+  export type VoteStructStruct = {
+    proposalKey: PromiseOrValue<BytesLike>;
+    memberKey: PromiseOrValue<BytesLike>;
+    voteFor: PromiseOrValue<boolean>;
+  };
+
+  export type VoteStructStructOutput = [string, string, boolean] & {
+    proposalKey: string;
+    memberKey: string;
+    voteFor: boolean;
+  };
+}
+
 export interface DAOCake_Rep_VotesInterface extends utils.Interface {
   functions: {
     "exists(bytes32)": FunctionFragment;
@@ -139,13 +153,7 @@ export interface DAOCake_Rep_Votes extends BaseContract {
     getVote(
       key: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
-    ): Promise<
-      [string, string, boolean] & {
-        proposalKey: string;
-        memberKey: string;
-        voteFor: boolean;
-      }
-    >;
+    ): Promise<[DAOCake_Entities.VoteStructStructOutput]>;
 
     getVoteAtIndex(
       index: PromiseOrValue<BigNumberish>,
@@ -173,13 +181,7 @@ export interface DAOCake_Rep_Votes extends BaseContract {
   getVote(
     key: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides
-  ): Promise<
-    [string, string, boolean] & {
-      proposalKey: string;
-      memberKey: string;
-      voteFor: boolean;
-    }
-  >;
+  ): Promise<DAOCake_Entities.VoteStructStructOutput>;
 
   getVoteAtIndex(
     index: PromiseOrValue<BigNumberish>,
@@ -205,13 +207,7 @@ export interface DAOCake_Rep_Votes extends BaseContract {
     getVote(
       key: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
-    ): Promise<
-      [string, string, boolean] & {
-        proposalKey: string;
-        memberKey: string;
-        voteFor: boolean;
-      }
-    >;
+    ): Promise<DAOCake_Entities.VoteStructStructOutput>;
 
     getVoteAtIndex(
       index: PromiseOrValue<BigNumberish>,

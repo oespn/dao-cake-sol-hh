@@ -37,6 +37,7 @@ export interface DAOCake_Rep_OrgsInterface extends utils.Interface {
     "getOrgAtIndex(uint256)": FunctionFragment;
     "getOrgCount()": FunctionFragment;
     "getOrgMembers(bytes32)": FunctionFragment;
+    "getOrgProposals(bytes32)": FunctionFragment;
     "getVotesRequired(bytes32)": FunctionFragment;
     "memberAdd(bytes32,bytes32)": FunctionFragment;
     "memberApproved(bytes32,bytes32)": FunctionFragment;
@@ -57,6 +58,7 @@ export interface DAOCake_Rep_OrgsInterface extends utils.Interface {
       | "getOrgAtIndex"
       | "getOrgCount"
       | "getOrgMembers"
+      | "getOrgProposals"
       | "getVotesRequired"
       | "memberAdd"
       | "memberApproved"
@@ -91,6 +93,10 @@ export interface DAOCake_Rep_OrgsInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getOrgMembers",
+    values: [PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getOrgProposals",
     values: [PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
@@ -162,6 +168,10 @@ export interface DAOCake_Rep_OrgsInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "getOrgMembers",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getOrgProposals",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -310,6 +320,11 @@ export interface DAOCake_Rep_Orgs extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string[]] & { array: string[] }>;
 
+    getOrgProposals(
+      orgKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[string[]] & { array: string[] }>;
+
     getVotesRequired(
       orgKey: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
@@ -410,6 +425,11 @@ export interface DAOCake_Rep_Orgs extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string[]>;
 
+  getOrgProposals(
+    orgKey: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<string[]>;
+
   getVotesRequired(
     orgKey: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides
@@ -506,6 +526,11 @@ export interface DAOCake_Rep_Orgs extends BaseContract {
     getOrgCount(overrides?: CallOverrides): Promise<BigNumber>;
 
     getOrgMembers(
+      orgKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<string[]>;
+
+    getOrgProposals(
       orgKey: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<string[]>;
@@ -653,6 +678,11 @@ export interface DAOCake_Rep_Orgs extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getOrgProposals(
+      orgKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getVotesRequired(
       orgKey: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
@@ -742,6 +772,11 @@ export interface DAOCake_Rep_Orgs extends BaseContract {
     getOrgCount(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getOrgMembers(
+      orgKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getOrgProposals(
       orgKey: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
