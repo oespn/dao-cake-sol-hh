@@ -1,4 +1,14 @@
-# Solidity Template
+# DAO Cake - On TRON Blockchain.  
+
+## Test cases in Hardhat. 
+## Deploys using TronBox.
+
+![DAOCake_Logo_680x](https://user-images.githubusercontent.com/42083185/180873684-150466c9-b4a4-4aac-8e97-e057dc8fa555.png)
+
+[DAO Cake Website](https://daocake.xyz/)
+
+
+# Build using Solidity Template
 
 My favorite setup for writing Solidity smart contracts.
 
@@ -110,7 +120,9 @@ If you can't get the [Waffle matchers](https://ethereum-waffle.readthedocs.io/en
 make your `ethers` package version match the version used by the `@ethereum-waffle/chai` package. Seem
 [#111](https://github.com/paulrberg/solidity-template/issues/111) for more details.
 
-### Tronweb
+
+
+## Deploy with Tronweb
 
 Install tronbox
 
@@ -120,14 +132,20 @@ npm install -g tronbox
 
 Create .env file and change PRIVATE_KEY_SHASTA
 
-Compile
+### Compile
 
 ```sh
 tronbox compile --compile-all
 ```
 
-Deploy
+### Deploy
 
 ```sh
 source .env && tronbox migrate --reset --network shasta
 ```
+
+
+### Credits
+
+Clean CRUD operations thanks to sets lib by https://github.com/rob-Hitchens! 
+
