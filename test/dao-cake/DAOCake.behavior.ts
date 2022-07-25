@@ -12,6 +12,7 @@ export function shouldBehaveLikeDAOCake(): void {
   const voteDB1 = "0x013d8503e20341a382cd213ce3684aac017d8503e20341a382cd213ce3684aa1";
   const voteDB2 = "0x013d8503e20341a382cd213ce3684aac017d8503e20341a382cd213ce3684aa2";
   const propDB = "0x014d8503e20341a382cd213ce3684aac017d8503e20341a382cd213ce3684aa0";
+  const propDB2 = "0x015d8503e20341a382cd213ce3684aac017d8503e20341a382cd213ce3684aa2";
 
   it("should return the new org once it's created", async function () {
     //expect(await this.daoCake.connect(this.signers.admin).getOrg(org)).to.equal("");
@@ -44,8 +45,8 @@ export function shouldBehaveLikeDAOCake(): void {
 
     // show the data of proposals
 
-    const resProposal1 = await this.daoCake.connect(this.signers.admin).getProposalData(alice);
-    console.log("getProposalData:" + alice, resProposal1);
+    const resProposal1 = await this.daoCake.connect(this.signers.admin).getProposal(alice);
+    console.log("getProposal Data:" + alice, resProposal1);
 
     // const resProposals1 = await this.daoCake.connect(this.signers.admin).getProposalsOfOrgData(org);
     // console.log(resProposals1);
@@ -55,10 +56,19 @@ export function shouldBehaveLikeDAOCake(): void {
     console.log("cast vote as:", this.signers.admin.address);
     await this.daoCake.castVote(org, voteDB1, proposalAlice, true); // as admin vote for alice
 
-    const resVotes1 = await this.daoCake.connect(this.signers.admin).getVotesOfProposal(proposalAlice);
+    const resVotes1 = await this.daoCake.connect(this.signers.admin).getVotes(proposalAlice);
     console.log("getProposalVotes", resVotes1);
     // list of members who have voted
     //expect(resVotes1).contains(alice);
+
+    // View flat data of Alice's claim to Join
+    //const resVotes2 = await this.daoCake.connect(this.signers.admin).getVotesOfProposalDataArrayStr(proposalAlice);
+    //console.log("Votes on Alice Claim:", resVotes2);
+    for (let i = 0; i < resVotes1.length; i++) {
+      const e = resVotes1[i];
+      const resVote = await this.daoCake.connect(this.signers.admin).getVote(e);
+      console.log("Votes on Alice Claim:#" + i, resVote);
+    }
 
     const resVotesData = await this.daoCake.connect(this.signers.admin).getVotesOfProposalData(proposalAlice);
     console.log("getVotesOfProposalData", resVotesData);
@@ -70,10 +80,15 @@ export function shouldBehaveLikeDAOCake(): void {
     const resVote = await this.daoCake.connect(this.signers.admin).getProposalsOfOrgData(org);
     console.log("Proposals after Vote:", resVote);
 
-    // let Alice raise a claim
+    // let Alice raise multiple claims
     await this.daoCake.createClaim(propDB, org, "my claim", "claim id", "doc_cid", "ref_id", 1000);
+    await this.daoCake.createClaim(propDB2, org, "my claim", "claim id", "doc_cid", "ref_id", 1000);
     const resClaim = await this.daoCake.connect(this.signers.admin).getProposalsOfOrgData(org);
     console.log("Proposals after Claim:", resClaim);
+
+    // View flat data of all claims at Org
+    // const resProp2 = await this.daoCake.connect(this.signers.admin).getProposalsOfOrgDataArrayStr(org);
+    // console.log("Proposals of Org (flat):", resProp2);
 
     //-- RAISE ERROR CASES: remove comment //-- to test
 

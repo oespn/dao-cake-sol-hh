@@ -2,7 +2,6 @@
 pragma solidity ^0.8.6;
 
 import "./HitchensUnorderedKeySet.sol";
-//import "./Ownable.sol";
 
 import "./DAOCake_Entities.sol";
 import "./DAOCake_Rep_Orgs.sol";
@@ -12,19 +11,13 @@ import "./DAOCake_Rep_Proposals.sol";
 import "./DAOCake_Rep_Votes.sol";
 
 contract DAOCake {
-    // using HitchensUnorderedKeySetLib for HitchensUnorderedKeySetLib.Set;
-    // HitchensUnorderedKeySetLib.Set orgSet;
-    //mapping(bytes32 => OrgStruct) orgs;
-
-    //Owner owner;
-
     DAOCake_Rep_Orgs _org = new DAOCake_Rep_Orgs();
     DAOCake_Rep_Members _member = new DAOCake_Rep_Members();
 
     DAOCake_Rep_Proposals _proposal = new DAOCake_Rep_Proposals();
     DAOCake_Rep_Votes _vote = new DAOCake_Rep_Votes();
 
-    //DAOCake_Entities.MemberStruct memberTest;
+    DAOCake_Entities _utils = new DAOCake_Entities();
 
     // DAO/Org creation & reading
 
@@ -78,6 +71,7 @@ contract DAOCake {
                 );
                 _org.proposalAdd(orgKey, proposalKey);
                 bytes32 voteKey = memberKey;
+                //bytes32 voteKey = bytes32(sha256(abi.encodePacked(memberKey,proposalKey)));
                 _vote.newVote(voteKey, proposalKey, memberKey, true);
             }
         }
@@ -105,20 +99,45 @@ contract DAOCake {
         return _org.getOrgApprovedMembers(orgKey);
     }
 
-    // getOrgsCreatedBy(bytes32 memberKey)
-
-    // getOrgsMemberOf(bytes32 memberKey) return view returns (bytes32[] orgs)
-
     // Claims & Transactions (proposals core entity)
 
     function getProposalsOfOrg(bytes32 orgKey) public view returns (bytes32[] memory array) {
         return _org.getOrgProposals(orgKey);
     }
 
-    function getProposalData(bytes32 proposalKey) public view returns (DAOCake_Entities.ProposalReturn memory r) {
-        return _proposal.getProposal(proposalKey);
+    function getProposal(bytes32 proposalKey)
+        public
+        view
+        returns (
+            bytes32 orgKey,
+            bytes32 memberKey,
+            string memory name,
+            string memory uuid,
+            string memory doc_cid,
+            string memory ref_id,
+            uint256 total,
+            uint16 nVotes,
+            DAOCake_Entities.ProposalType proposalType,
+            DAOCake_Entities.DecisionStatus decision
+        )
+    {
+        DAOCake_Entities.ProposalReturn memory r = _proposal.getProposal(proposalKey);
+
+        return (
+            r.orgKey,
+            r.memberKey,
+            r.name,
+            r.uuid,
+            r.doc_cid,
+            r.ref_id,
+            r.total,
+            r.nVotes,
+            r.proposalType,
+            r.decision
+        );
     }
 
+    // Hard hat testing viewing only - won't return on TRON
     function getProposalsOfOrgData(bytes32 orgKey) public view returns (DAOCake_Entities.ProposalReturn[] memory) {
         bytes32[] memory array = _org.getOrgProposals(orgKey);
         DAOCake_Entities.ProposalReturn[] memory pData = new DAOCake_Entities.ProposalReturn[](array.length);
@@ -128,10 +147,12 @@ contract DAOCake {
         return pData;
     }
 
+    // Hard hat testing only - won't return on TRON
     function getVotesOfProposalData(bytes32 proposalKey) public view returns (DAOCake_Entities.VoteStruct[] memory) {
         bytes32[] memory array = _proposal.getProposalVotes(proposalKey);
         // array of members who have voted
         DAOCake_Entities.VoteStruct[] memory pData = new DAOCake_Entities.VoteStruct[](array.length);
+
         for (uint16 i = 0; i < array.length; i++) {
             //bytes32 voteKey = _proposal.getProposalVoteByMember(proposalKey, array[i]);
             pData[i] = _vote.getVote(array[i]); //needs to be VoteKey (not member)
@@ -139,11 +160,23 @@ contract DAOCake {
         return pData;
     }
 
-    function getVotesOfProposal(bytes32 proposalKey) public view returns (bytes32[] memory array) {
+    function getVotes(bytes32 proposalKey) public view returns (bytes32[] memory array) {
         return _proposal.getProposalVotes(proposalKey);
     }
 
-    /// ** getVotesByMember(me) Member[].votes
+    function getVote(bytes32 voteKey)
+        public
+        view
+        returns (
+            bytes32 proposalKey,
+            bytes32 memberKey,
+            bool voteFor
+        )
+    {
+        DAOCake_Entities.VoteStruct memory r = _vote.getVote(voteKey);
+
+        return (r.proposalKey, r.memberKey, r.voteFor);
+    }
 
     function createClaim(
         bytes32 proposalKey,
@@ -174,21 +207,11 @@ contract DAOCake {
                 DAOCake_Entities.ProposalType.PAY
             );
             _org.proposalAdd(orgKey, proposalKey);
-            bytes32 voteKey = memberKey;
+            bytes32 voteKey = bytes32(sha256(abi.encodePacked(memberKey, proposalKey)));
+            // bytes32(address(uint160(uint256(memberKey))) + address(uint160(uint256(proposalKey))));
             _vote.newVote(voteKey, proposalKey, memberKey, true);
         }
     }
-
-    // ^^ Duplicate for each Type
-    // createNewMember, createOrgRules all calling
-    // private createProposal
-
-    // Voting
-
-    // struct Tally {
-    //     uint16 votes;
-    //     uint16 votesFor;
-    // }
 
     function castVote(
         bytes32 orgKey,
@@ -237,14 +260,53 @@ contract DAOCake {
 
     // Member
 
-    /**
-     * @dev Set contract deployer as owner
-     */
+    // function VoteStructReturnAsString (bytes32 voteKey, DAOCake_Entities.VoteStruct memory stru) public view returns (string memory) {
+    //     //string memory delim = ",";
+    //     return string(abi.encodePacked(
+    //         voteKey, //delim,
+    //         stru.proposalKey, //delim,
+    //         stru.memberKey, //delim,
+    //         stru.voteFor
+    //     ));
+    // }
 
-    // constructor() {
+    // function ProposalReturnAsString (bytes32 proposalKey, DAOCake_Entities.ProposalReturn memory stru) public view returns (string memory) {
+    //     //string memory delim = ",";
+    //     return string(abi.encodePacked(
+    //         proposalKey, //delim,
+    //         stru.orgKey, //delim,
+    //         stru.memberKey, //delim,
+    //         stru.name, //delim,
+    //         stru.uuid, //delim,
+    //         stru.doc_cid, //delim,
+    //         stru.ref_id, //delim,
+    //         stru.total, //delim,
+    //         stru.nVotes, //delim,
+    //         stru.proposalType, //delim,
+    //         stru.decision
+    //      ));
+    // }
 
-    //     //owner = new Owner();
+    // function bytes32ToString(bytes32 _bytes32) public pure returns (string memory) {
+    //     uint8 i = 0;
+    //     bytes memory bytesArray = new bytes(64);
+    //     for (i = 0; i < bytesArray.length; i++) {
 
-    //     //owner = msg.sender; // 'msg.sender' is sender of current call, contract deployer for a constructor
+    //         uint8 _f = uint8(_bytes32[i/2] & 0x0f);
+    //         uint8 _l = uint8(_bytes32[i/2] >> 4);
+
+    //         bytesArray[i] = toByte(_f);
+    //         i = i + 1;
+    //         bytesArray[i] = toByte(_l);
+    //     }
+    //     return string(bytesArray);
+    // }
+
+    // function toByte(uint8 _uint8) public pure returns (byte memory ) {
+    //     if(_uint8 < 10) {
+    //         return byte(_uint8 + 48);
+    //     } else {
+    //         return byte(_uint8 + 87);
+    //     }
     // }
 }

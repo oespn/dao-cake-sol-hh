@@ -71,6 +71,7 @@ contract DAOCake_Entities {
         bytes32 memberKey;
         bool voteFor; // or Against == false
     }
+
     // key: mapping(bytes32 => VoteStruct) votes;
 
     /// Explicit return models for external use
@@ -87,5 +88,15 @@ contract DAOCake_Entities {
         uint16 nVotes;
         ProposalType proposalType;
         DecisionStatus decision;
+    }
+
+    // For flattening Structs to Strings
+
+    function appendString(
+        string memory _a,
+        string memory _b,
+        string memory _c
+    ) internal pure returns (string memory) {
+        return string(abi.encodePacked(_a, _b, _c));
     }
 }

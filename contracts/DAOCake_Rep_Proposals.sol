@@ -10,30 +10,6 @@ contract DAOCake_Rep_Proposals {
 
     HitchensUnorderedKeySetLib.Set proposalSet;
 
-    // struct ProposalStruct {
-    //     string name;
-
-    //     // fk
-    //     bytes32 memberKey; // creator
-
-    //     // ext refs
-    //     string uuid; // Integeration with external DB
-    //     string doc_cid; // file ref eg: invoice PDF
-    //     string ref_id; // external identifier eg: invoice #
-
-    //     // properties
-    //     uint256 created_time; // epoch time
-    //     uint total;  //DOU (DAO IOUs)
-
-    //     DecisionStatus decision; // = DecisionStatus.Undecided;
-    //     ProposalType proposalType; // = ProposalType.Pay;
-
-    //     // internal mappings
-    //     uint16 nVotes;
-    //     mapping(bytes32 => bool) hasVoted; // true if this member has voted on proposal. Keep CRUD separate.
-    //     bytes32[] votes; // ref: VoteSet
-    // }
-
     mapping(bytes32 => DAOCake_Entities.ProposalStruct) proposals;
 
     event LogNewProposal(
@@ -226,7 +202,12 @@ contract DAOCake_Rep_Proposals {
         emit LogRemProposal(msg.sender, key);
     }
 
-    function getProposal(bytes32 key) public view returns (DAOCake_Entities.ProposalReturn memory r) // (
+    function getProposal(bytes32 key)
+        public
+        view
+        returns (
+            DAOCake_Entities.ProposalReturn memory r // (
+        )
     //     bytes32 orgKey,
     //     bytes32 memberKey,
     //     string memory name,
