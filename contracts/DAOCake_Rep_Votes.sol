@@ -1,4 +1,4 @@
-// SPDX-License-Identifier
+// SPDX-License-Identifier:  GPL-3.0-or-later
 pragma solidity ^0.8.6;
 
 import "./HitchensUnorderedKeySet.sol";
@@ -60,7 +60,12 @@ contract DAOCake_Rep_Votes {
     //     emit LogRemVote(msg.sender, key);
     // }
 
-    function getVote(bytes32 key) public view returns (DAOCake_Entities.VoteStruct memory) // returns (
+    function getVote(bytes32 key)
+        public
+        view
+        returns (
+            DAOCake_Entities.VoteStruct memory // returns (
+        )
     //     bytes32 proposalKey,
     //     bytes32 memberKey,
     //     bool voteFor

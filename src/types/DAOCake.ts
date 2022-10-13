@@ -27,6 +27,7 @@ import type {
 
 export declare namespace DAOCake_Entities {
   export type ProposalReturnStruct = {
+    proposalKey: PromiseOrValue<BytesLike>;
     orgKey: PromiseOrValue<BytesLike>;
     memberKey: PromiseOrValue<BytesLike>;
     name: PromiseOrValue<string>;
@@ -46,11 +47,13 @@ export declare namespace DAOCake_Entities {
     string,
     string,
     string,
+    string,
     BigNumber,
     number,
     number,
     number
   ] & {
+    proposalKey: string;
     orgKey: string;
     memberKey: string;
     name: string;

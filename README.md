@@ -131,3 +131,5 @@ Deploy
 ```sh
 source .env && tronbox migrate --reset --network shasta
 ```
+
+nvm use -g 16

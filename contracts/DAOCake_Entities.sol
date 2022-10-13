@@ -1,4 +1,4 @@
-// SPDX-License-Identifier
+// SPDX-License-Identifier:  GPL-3.0-or-later
 pragma solidity ^0.8.6;
 
 contract DAOCake_Entities {
@@ -78,6 +78,7 @@ contract DAOCake_Entities {
     /// Use above structs where no difference required
 
     struct ProposalReturn {
+        bytes32 proposalKey;
         bytes32 orgKey;
         bytes32 memberKey;
         string name;

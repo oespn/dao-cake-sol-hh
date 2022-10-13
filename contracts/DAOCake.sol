@@ -143,6 +143,7 @@ contract DAOCake {
         DAOCake_Entities.ProposalReturn[] memory pData = new DAOCake_Entities.ProposalReturn[](array.length);
         for (uint16 i = 0; i < array.length; i++) {
             pData[i] = _proposal.getProposal(array[i]);
+            pData[i].proposalKey = array[i];
         }
         return pData;
     }
